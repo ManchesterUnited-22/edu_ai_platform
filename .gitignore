@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+data/uploads/*
+data/chroma/*
+data/postgres/*
+data/neo4j/*
+!data/**/.gitkeep
+coverage/
+.idea/
+.vscode/

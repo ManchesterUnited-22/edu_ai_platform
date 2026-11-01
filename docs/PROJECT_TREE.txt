@@ -1,0 +1,270 @@
+edu-ai-platform-js/
+├── backend
+│   ├── prisma
+│   │   ├── migrations
+│   │   │   └── .gitkeep
+│   │   └── schema.prisma
+│   ├── scripts
+│   │   ├── checkSync.js
+│   │   ├── reindexAll.js
+│   │   └── seedDemoData.js
+│   ├── src
+│   │   ├── config
+│   │   │   ├── chroma.js
+│   │   │   ├── constants.js
+│   │   │   ├── db.js
+│   │   │   ├── env.js
+│   │   │   ├── gemini.js
+│   │   │   └── neo4j.js
+│   │   ├── controllers
+│   │   │   ├── auth.controller.js
+│   │   │   ├── class.controller.js
+│   │   │   ├── content.controller.js
+│   │   │   ├── document.controller.js
+│   │   │   ├── feedback.controller.js
+│   │   │   ├── parent.controller.js
+│   │   │   ├── practice.controller.js
+│   │   │   ├── progress.controller.js
+│   │   │   ├── qa.controller.js
+│   │   │   ├── question.controller.js
+│   │   │   ├── quiz.controller.js
+│   │   │   ├── report.controller.js
+│   │   │   ├── socratic.controller.js
+│   │   │   └── user.controller.js
+│   │   ├── jobs
+│   │   │   ├── alertCron.js
+│   │   │   └── documentQueue.js
+│   │   ├── middlewares
+│   │   │   ├── auth.js
+│   │   │   ├── chatLock.js
+│   │   │   ├── errorHandler.js
+│   │   │   ├── rateLimit.js
+│   │   │   ├── rbac.js
+│   │   │   ├── upload.js
+│   │   │   └── validate.js
+│   │   ├── prompts
+│   │   │   ├── lectureOutline.txt
+│   │   │   ├── outlineGeneration.txt
+│   │   │   ├── questionGeneration.txt
+│   │   │   ├── ragAnswer.txt
+│   │   │   ├── refusalMessages.txt
+│   │   │   └── socratic.txt
+│   │   ├── routes
+│   │   │   ├── auth.routes.js
+│   │   │   ├── class.routes.js
+│   │   │   ├── content.routes.js
+│   │   │   ├── document.routes.js
+│   │   │   ├── feedback.routes.js
+│   │   │   ├── index.js
+│   │   │   ├── parent.routes.js
+│   │   │   ├── practice.routes.js
+│   │   │   ├── progress.routes.js
+│   │   │   ├── qa.routes.js
+│   │   │   ├── question.routes.js
+│   │   │   ├── quiz.routes.js
+│   │   │   ├── report.routes.js
+│   │   │   ├── socratic.routes.js
+│   │   │   └── user.routes.js
+│   │   ├── services
+│   │   │   ├── generation
+│   │   │   │   ├── geminiClient.js
+│   │   │   │   ├── lectureOutlineService.js
+│   │   │   │   ├── outlineService.js
+│   │   │   │   └── questionService.js
+│   │   │   ├── ingestion
+│   │   │   │   ├── extractDocx.js
+│   │   │   │   ├── extractPdf.js
+│   │   │   │   ├── normalizer.js
+│   │   │   │   ├── ocr.js
+│   │   │   │   └── pipeline.js
+│   │   │   ├── parent
+│   │   │   │   ├── alertService.js
+│   │   │   │   └── linkService.js
+│   │   │   ├── progress
+│   │   │   │   ├── classReportService.js
+│   │   │   │   └── progressService.js
+│   │   │   ├── publishing
+│   │   │   │   ├── publishService.js
+│   │   │   │   └── vectorSync.js
+│   │   │   ├── quiz
+│   │   │   │   ├── officialQuizService.js
+│   │   │   │   ├── practiceQuizService.js
+│   │   │   │   └── scoring.js
+│   │   │   ├── rag
+│   │   │   │   ├── chunker.js
+│   │   │   │   ├── citation.js
+│   │   │   │   ├── confidence.js
+│   │   │   │   ├── embedder.js
+│   │   │   │   ├── generator.js
+│   │   │   │   ├── graphStore.js
+│   │   │   │   ├── pipeline.js
+│   │   │   │   ├── promptBuilder.js
+│   │   │   │   ├── retriever.js
+│   │   │   │   └── vectorStore.js
+│   │   │   └── safety
+│   │   │       ├── contentSafety.js
+│   │   │       ├── promptInjection.js
+│   │   │       ├── quota.js
+│   │   │       └── socraticGuard.js
+│   │   ├── utils
+│   │   │   ├── AppError.js
+│   │   │   ├── files.js
+│   │   │   ├── hash.js
+│   │   │   ├── jwt.js
+│   │   │   ├── logger.js
+│   │   │   └── text.js
+│   │   ├── validators
+│   │   │   ├── auth.validator.js
+│   │   │   ├── class.validator.js
+│   │   │   ├── content.validator.js
+│   │   │   ├── document.validator.js
+│   │   │   ├── feedback.validator.js
+│   │   │   ├── parent.validator.js
+│   │   │   ├── qa.validator.js
+│   │   │   ├── question.validator.js
+│   │   │   └── quiz.validator.js
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── tests
+│   │   ├── integration
+│   │   │   ├── authz.test.js
+│   │   │   ├── officialQuiz.test.js
+│   │   │   ├── parentLink.test.js
+│   │   │   ├── publishSync.test.js
+│   │   │   └── ragPipeline.test.js
+│   │   └── unit
+│   │       ├── chunker.test.js
+│   │       ├── confidence.test.js
+│   │       ├── promptInjection.test.js
+│   │       ├── rbac.test.js
+│   │       └── scoring.test.js
+│   ├── .eslintrc.json
+│   ├── Dockerfile
+│   ├── jest.config.js
+│   └── package.json
+├── data
+│   ├── chroma
+│   │   └── .gitkeep
+│   ├── neo4j
+│   │   └── .gitkeep
+│   ├── postgres
+│   │   └── .gitkeep
+│   └── uploads
+│       └── .gitkeep
+├── docs
+│   ├── report
+│   │   └── .gitkeep
+│   ├── slides
+│   │   └── .gitkeep
+│   ├── wireframes
+│   │   ├── parent.md
+│   │   ├── student.md
+│   │   └── teacher.md
+│   ├── 00_de_cuong_do_an.md
+│   ├── 01_requirements.md
+│   ├── 02_architecture.md
+│   ├── 03_database_design.md
+│   ├── 04_api_spec.md
+│   ├── 05_rbac_matrix.md
+│   ├── 06_rag_design.md
+│   ├── 07_publish_sync_design.md
+│   ├── 08_evaluation_plan.md
+│   ├── 09_future_work.md
+│   ├── 10_weekly_plan.md
+│   └── PROJECT_TREE.txt
+├── evaluation
+│   ├── goldenQA
+│   │   ├── README.md
+│   │   └── golden_qa.csv
+│   ├── reports
+│   │   └── .gitkeep
+│   ├── sampleCorpus
+│   │   └── README.md
+│   ├── metrics.js
+│   ├── runEval.js
+│   └── thresholdTuning.js
+├── frontend
+│   ├── public
+│   │   └── .gitkeep
+│   ├── src
+│   │   ├── api
+│   │   │   ├── auth.js
+│   │   │   ├── classes.js
+│   │   │   ├── client.js
+│   │   │   ├── contents.js
+│   │   │   ├── documents.js
+│   │   │   ├── parents.js
+│   │   │   ├── progress.js
+│   │   │   ├── qa.js
+│   │   │   └── quizzes.js
+│   │   ├── components
+│   │   │   ├── charts
+│   │   │   │   ├── ScoreChart.jsx
+│   │   │   │   └── WeakTopicChart.jsx
+│   │   │   ├── chat
+│   │   │   │   ├── ChatBox.jsx
+│   │   │   │   ├── CitationCard.jsx
+│   │   │   │   └── ReportWrongAnswerButton.jsx
+│   │   │   ├── common
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Loading.jsx
+│   │   │   │   └── Modal.jsx
+│   │   │   ├── editor
+│   │   │   │   └── ContentEditor.jsx
+│   │   │   ├── layout
+│   │   │   │   ├── Header.jsx
+│   │   │   │   └── Sidebar.jsx
+│   │   │   └── quiz
+│   │   │       ├── QuestionCard.jsx
+│   │   │       └── QuizResult.jsx
+│   │   ├── hooks
+│   │   │   ├── useAuth.js
+│   │   │   └── useQuizTimer.js
+│   │   ├── pages
+│   │   │   ├── auth
+│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   └── RegisterPage.jsx
+│   │   │   ├── parent
+│   │   │   │   ├── AlertsPage.jsx
+│   │   │   │   ├── ChildProgressPage.jsx
+│   │   │   │   ├── LinkChildPage.jsx
+│   │   │   │   └── ParentDashboard.jsx
+│   │   │   ├── student
+│   │   │   │   ├── AskPage.jsx
+│   │   │   │   ├── MaterialsPage.jsx
+│   │   │   │   ├── MyProgressPage.jsx
+│   │   │   │   ├── OfficialQuizPage.jsx
+│   │   │   │   ├── PracticeQuizPage.jsx
+│   │   │   │   ├── SocraticPage.jsx
+│   │   │   │   └── StudentDashboard.jsx
+│   │   │   ├── teacher
+│   │   │   │   ├── ClassDetailPage.jsx
+│   │   │   │   ├── ClassListPage.jsx
+│   │   │   │   ├── ClassReportPage.jsx
+│   │   │   │   ├── DocumentUploadPage.jsx
+│   │   │   │   ├── GenerateOutlinePage.jsx
+│   │   │   │   ├── GenerateQuestionsPage.jsx
+│   │   │   │   ├── LectureOutlinePage.jsx
+│   │   │   │   ├── QuizManagePage.jsx
+│   │   │   │   ├── ReviewPublishPage.jsx
+│   │   │   │   ├── TeacherDashboard.jsx
+│   │   │   │   └── WrongAnswerReportsPage.jsx
+│   │   │   └── NotFoundPage.jsx
+│   │   ├── routes
+│   │   │   ├── AppRoutes.jsx
+│   │   │   └── ProtectedRoute.jsx
+│   │   ├── store
+│   │   │   └── authStore.js
+│   │   ├── styles
+│   │   │   └── index.css
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── .env.example
+├── .gitignore
+├── Makefile
+├── README.md
+└── docker-compose.yml

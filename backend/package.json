@@ -1,0 +1,44 @@
+{
+  "name": "edu-ai-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "seed": "node scripts/seedDemoData.js",
+    "reindex": "node scripts/reindexAll.js",
+    "check-sync": "node scripts/checkSync.js",
+    "eval": "node ../evaluation/runEval.js",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@prisma/client": "^5.20.0",
+    "bcryptjs": "^2.4.3",
+    "chromadb": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.8.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "neo4j-driver": "^5.25.0",
+    "node-cron": "^3.0.3",
+    "pdf-parse": "^1.1.1",
+    "tesseract.js": "^5.1.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "prisma": "^5.20.0",
+    "supertest": "^7.0.0"
+  }
+}
