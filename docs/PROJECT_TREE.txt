@@ -5,7 +5,9 @@ edu-ai-platform-js/
 │   │   │   └── .gitkeep
 │   │   └── schema.prisma
 │   ├── scripts
+│   │   ├── checkGraphSync.js
 │   │   ├── checkSync.js
+│   │   ├── rebuildGraph.js
 │   │   ├── reindexAll.js
 │   │   └── seedDemoData.js
 │   ├── src
@@ -28,8 +30,10 @@ edu-ai-platform-js/
 │   │   │   ├── qa.controller.js
 │   │   │   ├── question.controller.js
 │   │   │   ├── quiz.controller.js
+│   │   │   ├── recommendation.controller.js
 │   │   │   ├── report.controller.js
 │   │   │   ├── socratic.controller.js
+│   │   │   ├── topic.controller.js
 │   │   │   └── user.controller.js
 │   │   ├── jobs
 │   │   │   ├── alertCron.js
@@ -38,6 +42,7 @@ edu-ai-platform-js/
 │   │   │   ├── auth.js
 │   │   │   ├── chatLock.js
 │   │   │   ├── errorHandler.js
+│   │   │   ├── graphGuard.js
 │   │   │   ├── rateLimit.js
 │   │   │   ├── rbac.js
 │   │   │   ├── upload.js
@@ -62,8 +67,10 @@ edu-ai-platform-js/
 │   │   │   ├── qa.routes.js
 │   │   │   ├── question.routes.js
 │   │   │   ├── quiz.routes.js
+│   │   │   ├── recommendation.routes.js
 │   │   │   ├── report.routes.js
 │   │   │   ├── socratic.routes.js
+│   │   │   ├── topic.routes.js
 │   │   │   └── user.routes.js
 │   │   ├── services
 │   │   │   ├── generation
@@ -71,6 +78,13 @@ edu-ai-platform-js/
 │   │   │   │   ├── lectureOutlineService.js
 │   │   │   │   ├── outlineService.js
 │   │   │   │   └── questionService.js
+│   │   │   ├── graph
+│   │   │   │   ├── graphClient.js
+│   │   │   │   ├── graphRebuild.js
+│   │   │   │   ├── graphSync.js
+│   │   │   │   ├── prerequisiteService.js
+│   │   │   │   ├── recommendationService.js
+│   │   │   │   └── topicGraphService.js
 │   │   │   ├── ingestion
 │   │   │   │   ├── extractDocx.js
 │   │   │   │   ├── extractPdf.js
@@ -96,7 +110,6 @@ edu-ai-platform-js/
 │   │   │   │   ├── confidence.js
 │   │   │   │   ├── embedder.js
 │   │   │   │   ├── generator.js
-│   │   │   │   ├── graphStore.js
 │   │   │   │   ├── pipeline.js
 │   │   │   │   ├── promptBuilder.js
 │   │   │   │   ├── retriever.js
@@ -122,19 +135,24 @@ edu-ai-platform-js/
 │   │   │   ├── parent.validator.js
 │   │   │   ├── qa.validator.js
 │   │   │   ├── question.validator.js
-│   │   │   └── quiz.validator.js
+│   │   │   ├── quiz.validator.js
+│   │   │   └── topic.validator.js
 │   │   ├── app.js
 │   │   └── server.js
 │   ├── tests
 │   │   ├── integration
 │   │   │   ├── authz.test.js
+│   │   │   ├── graphDownRag.test.js
+│   │   │   ├── graphSync.test.js
 │   │   │   ├── officialQuiz.test.js
 │   │   │   ├── parentLink.test.js
 │   │   │   ├── publishSync.test.js
-│   │   │   └── ragPipeline.test.js
+│   │   │   ├── ragPipeline.test.js
+│   │   │   └── recommendation.test.js
 │   │   └── unit
 │   │       ├── chunker.test.js
 │   │       ├── confidence.test.js
+│   │       ├── prerequisiteCycle.test.js
 │   │       ├── promptInjection.test.js
 │   │       ├── rbac.test.js
 │   │       └── scoring.test.js
@@ -171,6 +189,7 @@ edu-ai-platform-js/
 │   ├── 08_evaluation_plan.md
 │   ├── 09_future_work.md
 │   ├── 10_weekly_plan.md
+│   ├── 11_graph_design.md
 │   └── PROJECT_TREE.txt
 ├── evaluation
 │   ├── goldenQA
@@ -196,7 +215,9 @@ edu-ai-platform-js/
 │   │   │   ├── parents.js
 │   │   │   ├── progress.js
 │   │   │   ├── qa.js
-│   │   │   └── quizzes.js
+│   │   │   ├── quizzes.js
+│   │   │   ├── recommendations.js
+│   │   │   └── topics.js
 │   │   ├── components
 │   │   │   ├── charts
 │   │   │   │   ├── ScoreChart.jsx
@@ -211,6 +232,9 @@ edu-ai-platform-js/
 │   │   │   │   └── Modal.jsx
 │   │   │   ├── editor
 │   │   │   │   └── ContentEditor.jsx
+│   │   │   ├── graph
+│   │   │   │   ├── PrerequisiteEditor.jsx
+│   │   │   │   └── TopicGraphView.jsx
 │   │   │   ├── layout
 │   │   │   │   ├── Header.jsx
 │   │   │   │   └── Sidebar.jsx
@@ -235,6 +259,7 @@ edu-ai-platform-js/
 │   │   │   │   ├── MyProgressPage.jsx
 │   │   │   │   ├── OfficialQuizPage.jsx
 │   │   │   │   ├── PracticeQuizPage.jsx
+│   │   │   │   ├── ReviewSuggestionsPage.jsx
 │   │   │   │   ├── SocraticPage.jsx
 │   │   │   │   └── StudentDashboard.jsx
 │   │   │   ├── teacher
@@ -248,6 +273,7 @@ edu-ai-platform-js/
 │   │   │   │   ├── QuizManagePage.jsx
 │   │   │   │   ├── ReviewPublishPage.jsx
 │   │   │   │   ├── TeacherDashboard.jsx
+│   │   │   │   ├── TopicManagePage.jsx
 │   │   │   │   └── WrongAnswerReportsPage.jsx
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── routes

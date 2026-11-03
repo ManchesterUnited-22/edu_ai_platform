@@ -1,13 +1,304 @@
-generator client {
-  provider = "prisma-client-js"
+// ───────── Enums (giá trị khớp với src/config/constants.js) ─────────
+enum Role {
+  teacher
+  student
+  parent
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+enum ContentStatus {
+  draft
+  reviewed
+  published
+  revoked
 }
 
-// TODO (tuần 1-2): thiết kế các bảng
-// User, Class, Enrollment, Document, Chunk, GeneratedContent,
-// Question, Quiz, QuizAttempt, PracticeQuiz, ParentLink, LinkCode,
-// QaLog, AnswerReport, Notification
+enum ProcessStatus {
+  uploaded
+  processing
+  ready
+  failed
+}
+
+enum ContentType {
+  outline
+  lecture_outline
+}
+
+enum ReportStatus {
+  open
+  resolved
+  dismissed
+}
+
+enum NotificationType {
+  inactive
+  score_drop
+}
+
+// ───────── Người dùng & lớp học ─────────
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  classesTaught   Class[]            @relation("TeacherClasses")
+  enrollments     Enrollment[]
+  documents       Document[]
+  contents        GeneratedContent[]
+  attempts        QuizAttempt[]
+  practiceQuizzes PracticeQuiz[]
+  qaLogs          QaLog[]
+  answerReports   AnswerReport[]
+  notifications   Notification[]
+  parentLinks     ParentLink[]       @relation("ParentSide")
+  studentLinks    ParentLink[]       @relation("StudentSide")
+  linkCodes       LinkCode[]         @relation("CodeOwner")
+  usedCodes       LinkCode[]         @relation("CodeUsedBy")
+}
+
+model Class {
+  id        String   @id @default(uuid())
+  name      String
+  subject   String
+  teacherId String
+  createdAt DateTime @default(now())
+
+  teacher         User               @relation("TeacherClasses", fields: [teacherId], references: [id])
+  enrollments     Enrollment[]
+  documents       Document[]
+  contents        GeneratedContent[]
+  questions       Question[]
+  quizzes         Quiz[]
+  practiceQuizzes PracticeQuiz[]
+  qaLogs          QaLog[]
+
+  @@index([teacherId])
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  classId   String
+  studentId String
+  joinedAt  DateTime @default(now())
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+}
+
+// ───────── Tài liệu & chunk (nguồn cho RAG) ─────────
+model Document {
+  id            String        @id @default(uuid())
+  classId       String
+  uploaderId    String
+  fileName      String
+  filePath      String
+  mimeType      String
+  processStatus ProcessStatus @default(uploaded)
+  errorMessage  String?
+  publishStatus ContentStatus @default(draft)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+
+  class    Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  uploader User    @relation(fields: [uploaderId], references: [id])
+  chunks   Chunk[]
+
+  @@index([classId, publishStatus])
+}
+
+model Chunk {
+  id          String  @id @default(uuid())
+  documentId  String
+  chunkIndex  Int
+  text        String
+  pageNumber  Int?
+  embeddingId String? // id của vector trong ChromaDB
+
+  document  Document   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@unique([documentId, chunkIndex])
+}
+
+// ───────── Nội dung AI sinh (đề cương, outline) ─────────
+model GeneratedContent {
+  id          String        @id @default(uuid())
+  classId     String
+  authorId    String
+  type        ContentType
+  title       String
+  body        Json
+  status      ContentStatus @default(draft)
+  version     Int           @default(1)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  class     Class      @relation(fields: [classId], references: [id], onDelete: Cascade)
+  author    User       @relation(fields: [authorId], references: [id])
+  questions Question[]
+
+  @@index([classId, status])
+}
+
+// ───────── Câu hỏi & quiz ─────────
+model Question {
+  id            String        @id @default(uuid())
+  classId       String
+  contentId     String?
+  sourceChunkId String?
+  text          String
+  options       Json // ["A...", "B...", "C...", "D..."]
+  correctIndex  Int
+  explanation   String?
+  topic         String?
+  difficulty    Int           @default(1)
+  status        ContentStatus @default(draft)
+  createdAt     DateTime      @default(now())
+
+  class         Class             @relation(fields: [classId], references: [id], onDelete: Cascade)
+  content       GeneratedContent? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  sourceChunk   Chunk?            @relation(fields: [sourceChunkId], references: [id], onDelete: SetNull)
+  quizQuestions QuizQuestion[]
+
+  @@index([classId, topic])
+}
+
+// Quiz chính thức do giáo viên tạo
+model Quiz {
+  id              String        @id @default(uuid())
+  classId         String
+  title           String
+  durationMinutes Int
+  maxAttempts     Int           @default(2)
+  opensAt         DateTime?
+  closesAt        DateTime?
+  status          ContentStatus @default(draft)
+  createdAt       DateTime      @default(now())
+
+  class     Class          @relation(fields: [classId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+}
+
+model QuizQuestion {
+  quizId     String
+  questionId String
+  position   Int
+
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@id([quizId, questionId])
+}
+
+// submittedAt = null nghĩa là đang làm bài -> dùng để khóa chat
+model QuizAttempt {
+  id          String    @id @default(uuid())
+  quizId      String
+  studentId   String
+  attemptNo   Int
+  answers     Json?
+  score       Float?
+  startedAt   DateTime  @default(now())
+  submittedAt DateTime?
+
+  quiz    Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student User @relation(fields: [studentId], references: [id])
+
+  @@unique([quizId, studentId, attemptNo])
+  @@index([studentId, submittedAt])
+}
+
+// Quiz luyện tập học sinh tự tạo (giới hạn theo ngày)
+model PracticeQuiz {
+  id          String    @id @default(uuid())
+  studentId   String
+  classId     String
+  topic       String?
+  questions   Json
+  answers     Json?
+  score       Float?
+  createdAt   DateTime  @default(now())
+  submittedAt DateTime?
+
+  student User  @relation(fields: [studentId], references: [id])
+  class   Class @relation(fields: [classId], references: [id])
+
+  @@index([studentId, createdAt])
+}
+
+// ───────── Phụ huynh ─────────
+model ParentLink {
+  id        String   @id @default(uuid())
+  parentId  String
+  studentId String
+  createdAt DateTime @default(now())
+
+  parent  User @relation("ParentSide", fields: [parentId], references: [id], onDelete: Cascade)
+  student User @relation("StudentSide", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, studentId])
+}
+
+// Mã liên kết có hạn, dùng một lần
+model LinkCode {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  studentId String
+  expiresAt DateTime
+  usedAt    DateTime?
+  usedById  String?
+
+  student User  @relation("CodeOwner", fields: [studentId], references: [id], onDelete: Cascade)
+  usedBy  User? @relation("CodeUsedBy", fields: [usedById], references: [id])
+}
+
+// ───────── Hỏi-đáp, báo cáo sai, thông báo ─────────
+model QaLog {
+  id        String   @id @default(uuid())
+  studentId String
+  classId   String
+  question  String
+  answer    String
+  citations Json?
+  topScore  Float?
+  refused   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  student User           @relation(fields: [studentId], references: [id])
+  class   Class          @relation(fields: [classId], references: [id])
+  reports AnswerReport[]
+
+  @@index([classId, createdAt])
+}
+
+model AnswerReport {
+  id         String       @id @default(uuid())
+  qaLogId    String
+  reporterId String
+  reason     String
+  status     ReportStatus @default(open)
+  createdAt  DateTime     @default(now())
+
+  qaLog    QaLog @relation(fields: [qaLogId], references: [id], onDelete: Cascade)
+  reporter User  @relation(fields: [reporterId], references: [id])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  message   String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}

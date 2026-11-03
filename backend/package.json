@@ -11,6 +11,8 @@
     "seed": "node scripts/seedDemoData.js",
     "reindex": "node scripts/reindexAll.js",
     "check-sync": "node scripts/checkSync.js",
+    "graph:rebuild": "node scripts/rebuildGraph.js",
+    "graph:check": "node scripts/checkGraphSync.js",
     "eval": "node ../evaluation/runEval.js",
     "lint": "eslint src"
   },

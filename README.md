@@ -23,6 +23,14 @@ make seed
 - Frontend: http://localhost:5173
 - API: http://localhost:8000/health
 
+## Bật Graph (tùy chọn)
+```bash
+# trong .env: GRAPH_ENABLED=true
+make graph-up
+make graph-rebuild   # dựng graph từ PostgreSQL
+```
+Graph chỉ phục vụ gợi ý ôn tập theo quan hệ tiên quyết; tắt graph thì RAG vẫn chạy bình thường (xem `docs/11_graph_design.md`).
+
 ## Chạy không dùng Docker
 ```bash
 cd backend  && npm install && npm run dev
