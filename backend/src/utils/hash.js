@@ -1,4 +1,8 @@
-// Băm mật khẩu (bcryptjs)
+import bcrypt from 'bcryptjs';
 
-// TODO: triển khai
-export {};
+const SALT_ROUNDS = 12;
+
+export const hashPassword = (password) => bcrypt.hash(password, SALT_ROUNDS);
+
+export const verifyPassword = (password, passwordHash) =>
+  bcrypt.compare(password, passwordHash);

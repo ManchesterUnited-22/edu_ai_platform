@@ -1,4 +1,18 @@
-// Validate request bằng zod
+import { AppError } from '../utils/AppError.js';
 
-// TODO: triển khai
-export {};
+export const validate = (schema) => (req, res, next) => {
+  const result = schema.safeParse(req.body);
+
+  if (!result.success) {
+    return next(
+      new AppError(
+        'Dữ liệu không hợp lệ',
+        400,
+        'VALIDATION_ERROR',
+      ),
+    );
+  }
+
+  req.body = result.data;
+  return next();
+};

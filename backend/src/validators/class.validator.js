@@ -1,4 +1,10 @@
-// Schema zod cho lớp học
+import { z } from 'zod';
 
-// TODO: triển khai
-export {};
+export const createClassSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  subject: z.string().trim().min(2).max(100),
+});
+
+export const enrollmentSchema = z.object({
+  studentId: z.string().uuid(),
+});

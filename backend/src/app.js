@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import routes from './routes/index.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.use(morgan('dev'));
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// TODO: app.use('/api/v1', routes);
-// TODO: app.use(errorHandler);
+app.use('/api/v1', routes);
+app.use(errorHandler);
 
 export default app;
