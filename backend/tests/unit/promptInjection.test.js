@@ -1,4 +1,1 @@
-// Test chống prompt injection
-
-// TODO: triển khai
-export {};
+test.todo('promptInjection');

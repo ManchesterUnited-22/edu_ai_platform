@@ -1,11 +1,18 @@
 import 'dotenv/config';
 
+// Bắt buộc có JWT_SECRET, trừ khi đang chạy test (Jest tự đặt NODE_ENV=test)
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret && process.env.NODE_ENV !== 'test') {
+  throw new Error('Thiếu JWT_SECRET trong backend/.env');
+}
+
 export const env = {
   PORT: Number(process.env.PORT ?? 8000),
 
   GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? '',
-  GEMINI_MODEL: process.env.GEMINI_MODEL ?? 'gemini-2.0-flash',
-  EMBEDDING_MODEL: process.env.EMBEDDING_MODEL ?? 'text-embedding-004',
+  GEMINI_MODEL: process.env.GEMINI_MODEL ?? 'gemini-2.5-flash',
+  EMBEDDING_MODEL: process.env.EMBEDDING_MODEL ?? 'gemini-embedding-001',
+  EMBEDDING_DIMENSIONS: Number(process.env.EMBEDDING_DIMENSIONS ?? 768),
 
   CHUNK_SIZE: Number(process.env.CHUNK_SIZE ?? 800),
   CHUNK_OVERLAP: Number(process.env.CHUNK_OVERLAP ?? 100),
@@ -19,7 +26,7 @@ export const env = {
   NEO4J_USER: process.env.NEO4J_USER ?? 'neo4j',
   NEO4J_PASSWORD: process.env.NEO4J_PASSWORD ?? '',
 
-  JWT_SECRET: process.env.JWT_SECRET ?? 'change_me',
+  JWT_SECRET: jwtSecret ?? 'test-only-secret',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '1h',
 
   PRACTICE_QUIZ_PER_DAY: Number(process.env.PRACTICE_QUIZ_PER_DAY ?? 5),

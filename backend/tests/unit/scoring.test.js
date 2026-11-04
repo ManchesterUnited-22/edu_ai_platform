@@ -1,4 +1,1 @@
-// Test chấm điểm
-
-// TODO: triển khai
-export {};
+test.todo('scoring');
