@@ -1,5 +1,5 @@
 import 'dotenv/config';
-
+import path from 'node:path';
 // Bắt buộc có JWT_SECRET, trừ khi đang chạy test (Jest tự đặt NODE_ENV=test)
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret && process.env.NODE_ENV !== 'test') {
@@ -34,4 +34,6 @@ export const env = {
   OFFICIAL_QUIZ_MAX_ATTEMPTS: Number(process.env.OFFICIAL_QUIZ_MAX_ATTEMPTS ?? 2),
   LINK_CODE_TTL_MINUTES: Number(process.env.LINK_CODE_TTL_MINUTES ?? 30),
   MAX_UPLOAD_MB: Number(process.env.MAX_UPLOAD_MB ?? 20),
+    // Chạy local: <repo>/data/uploads (lệnh chạy ở backend/). Docker đặt UPLOAD_DIR=/app/data/uploads
+  UPLOAD_DIR: process.env.UPLOAD_DIR ?? path.resolve(process.cwd(), '..', 'data', 'uploads'),
 };
