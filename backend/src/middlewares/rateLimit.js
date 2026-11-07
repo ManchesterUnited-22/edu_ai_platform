@@ -19,3 +19,22 @@ export const qaRateLimiter = rateLimit({
       ),
     ),
 });
+
+/** Sinh nội dung bằng AI (tốn lượt gọi Gemini): tối đa GEN_PER_HOUR lần/giờ cho mỗi giáo viên. */
+const GEN_PER_HOUR = Number(process.env.GEN_PER_HOUR ?? 20);
+
+export const generationRateLimiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: GEN_PER_HOUR,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? 'anonymous',
+  handler: (req, res, next) =>
+    next(
+      new AppError(
+        `Bạn đã dùng AI sinh nội dung quá ${GEN_PER_HOUR} lần trong một giờ, hãy thử lại sau.`,
+        429,
+        'RATE_LIMITED',
+      ),
+    ),
+});
