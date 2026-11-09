@@ -41,6 +41,7 @@ enum ReportStatus {
 enum NotificationType {
   inactive
   score_drop
+  low_quiz
 }
 
 // ───────── Người dùng & lớp học ─────────
@@ -73,7 +74,7 @@ model Class {
   subject   String
   teacherId String
   createdAt DateTime @default(now())
-
+  topics          Topic[]
   teacher         User               @relation("TeacherClasses", fields: [teacherId], references: [id])
   enrollments     Enrollment[]
   documents       Document[]
@@ -309,4 +310,32 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, readAt])
+}
+// ───────── Cây chủ đề & quan hệ tiên quyết (nguồn gốc của Graph) ─────────
+model Topic {
+  id        String   @id @default(uuid())
+  classId   String
+  name      String
+  parentId  String?
+  createdAt DateTime @default(now())
+
+  class         Class               @relation(fields: [classId], references: [id], onDelete: Cascade)
+  parent        Topic?              @relation("TopicTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children      Topic[]             @relation("TopicTree")
+  prerequisites TopicPrerequisite[] @relation("Dependent")
+  requiredBy    TopicPrerequisite[] @relation("Required")
+
+  @@unique([classId, name])
+  @@index([classId])
+}
+
+// topicId "cần biết trước" prerequisiteId
+model TopicPrerequisite {
+  topicId        String
+  prerequisiteId String
+
+  topic        Topic @relation("Dependent", fields: [topicId], references: [id], onDelete: Cascade)
+  prerequisite Topic @relation("Required", fields: [prerequisiteId], references: [id], onDelete: Cascade)
+
+  @@id([topicId, prerequisiteId])
 }

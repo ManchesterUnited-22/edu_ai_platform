@@ -38,3 +38,13 @@ export const generationRateLimiter = rateLimit({
       ),
     ),
 });
+/** Nhập mã liên kết: tối đa 10 lần / 15 phút cho mỗi phụ huynh, chống dò mã. */
+export const linkCodeRateLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? 'anonymous',
+  handler: (req, res, next) =>
+    next(new AppError('Bạn nhập mã sai quá nhiều lần, hãy thử lại sau 15 phút.', 429, 'RATE_LIMITED')),
+});

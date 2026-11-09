@@ -7,7 +7,7 @@ import { extractDocx } from './extractDocx.js';
 import { extractImage } from './ocr.js';
 import { extractPdf } from './extractPdf.js';
 import { normalizePages } from './normalizer.js';
-
+import { checkTextSafety } from '../safety/contentSafety.js'; 
 const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 export const SUPPORTED_MIME_TYPES = Object.freeze({
@@ -42,6 +42,10 @@ export async function processDocument(documentId, deps = {}) {
   try {
     const rawPages = await extract(doc.mimeType, resolveUploadPath(doc.filePath));
     const pages = normalizePages(rawPages);
+    const safety = checkTextSafety(pages.map((p) => p.text).join('\n'), { skip: ['self_harm'] });
+    if (!safety.safe) {
+      throw new Error(`Tài liệu bị chặn vì có nội dung không phù hợp (${safety.categories.join(', ')})`);
+    }
     const chunks = chunkPages(pages);
 
     if (chunks.length === 0) {

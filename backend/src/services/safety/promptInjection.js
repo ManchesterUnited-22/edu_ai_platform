@@ -41,7 +41,8 @@ const PATTERNS = [
   },
 ];
 
-function normalizeForMatch(text) {
+
+export function normalizeForMatch(text) {
   return text
     .normalize('NFD')
     .toLowerCase()

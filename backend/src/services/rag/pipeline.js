@@ -10,12 +10,12 @@ import {
 import { generateAnswer } from './generator.js';
 import { buildAnswerPrompt } from './promptBuilder.js';
 import { retrieve } from './retriever.js';
-
+import { checkTextSafety } from '../safety/contentSafety.js';
 const refusal = (reason, answer, topScore) => ({
   answer,
   citations: [],
   refused: true,
-  reason, // injection | no_evidence | model_refused
+  reason, // injection | unsafe | no_evidence | model_refused
   topScore,
 });
 
@@ -28,7 +28,8 @@ export async function answerQuestion({ question, classId }, deps = {}) {
   if (detectPromptInjection(question).flagged) {
     return refusal('injection', INJECTION_MESSAGE, null);
   }
-
+  const safety = checkTextSafety(question);
+  if (!safety.safe) return refusal('unsafe', safety.message, null);
   const retrieveFn = deps.retrieve ?? retrieve;
   const generate = deps.generate ?? generateAnswer;
 

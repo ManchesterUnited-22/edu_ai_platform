@@ -7,6 +7,8 @@ import defaultPrisma from '../../config/db.js';
 import { AppError } from '../../utils/AppError.js';
 import * as defaultStore from '../rag/vectorStore.js';
 import { indexDocument } from './vectorSync.js';
+import { linkDocumentChunks, unlinkDocumentChunks } from '../graph/graphSync.js';   // + cạnh các import
+import { tryGraph } from '../graph/graphClient.js';
 
 const inFlight = new Set();
 
@@ -83,6 +85,7 @@ export async function publishDocument(documentId, deps = {}) {
         }
         await tx.$executeRaw`UPDATE "Chunk" SET "embeddingId" = "id" WHERE "documentId" = ${documentId}`;
       });
+      await tryGraph(() => linkDocumentChunks(documentId, deps), 'gắn chunk vào graph'); // +
     } catch (error) {
       await store.deleteByDocument(documentId).catch(() => {});
       throw error;
@@ -109,6 +112,7 @@ export async function unpublishDocument(documentId, deps = {}) {
         where: { id: documentId, publishStatus: 'published' },
         data: { publishStatus: 'revoked' },
       });
+       await tryGraph(() => unlinkDocumentChunks(documentId, deps), 'gỡ chunk khỏi graph'); // +
       await tx.chunk.updateMany({ where: { documentId }, data: { embeddingId: null } });
     });
   });

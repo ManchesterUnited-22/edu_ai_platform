@@ -1,4 +1,5 @@
-// Schema zod cho phụ huynh
+import { z } from 'zod';
 
-// TODO: triển khai
-export {};
+export const redeemLinkCodeSchema = z.object({
+  code: z.string().trim().min(6).max(16),
+});

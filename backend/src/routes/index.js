@@ -11,7 +11,8 @@ import qaRoutes from './qa.routes.js';
 import questionRoutes from './question.routes.js';
 import quizRoutes from './quiz.routes.js';
 import reportRoutes from './report.routes.js';
-
+import parentRoutes from './parent.routes.js';
+import socraticRoutes from './socratic.routes.js';   
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -25,5 +26,6 @@ router.use('/', quizRoutes);
 router.use('/', practiceRoutes);
 router.use('/', progressRoutes);
 router.use('/', reportRoutes);
-
+router.use('/', parentRoutes);
+router.use('/', socraticRoutes);
 export default router;

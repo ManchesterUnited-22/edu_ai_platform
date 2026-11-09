@@ -33,6 +33,12 @@ export const env = {
   QA_PER_MINUTE: Number(process.env.QA_PER_MINUTE ?? 10),
   OFFICIAL_QUIZ_MAX_ATTEMPTS: Number(process.env.OFFICIAL_QUIZ_MAX_ATTEMPTS ?? 2),
   LINK_CODE_TTL_MINUTES: Number(process.env.LINK_CODE_TTL_MINUTES ?? 30),
+    // Cảnh báo phụ huynh (thang điểm 10)
+  ALERT_ENABLED: (process.env.ALERT_ENABLED ?? 'true') === 'true',
+  ALERT_CRON: process.env.ALERT_CRON ?? '0 7 * * *', // 7h sáng mỗi ngày (giờ VN)
+  ALERT_INACTIVE_DAYS: Number(process.env.ALERT_INACTIVE_DAYS ?? 7),
+  ALERT_SCORE_DROP: Number(process.env.ALERT_SCORE_DROP ?? 1.5),
+  ALERT_LOW_SCORE: Number(process.env.ALERT_LOW_SCORE ?? 5),
   MAX_UPLOAD_MB: Number(process.env.MAX_UPLOAD_MB ?? 20),
     // Chạy local: <repo>/data/uploads (lệnh chạy ở backend/). Docker đặt UPLOAD_DIR=/app/data/uploads
   UPLOAD_DIR: process.env.UPLOAD_DIR ?? path.resolve(process.cwd(), '..', 'data', 'uploads'),
