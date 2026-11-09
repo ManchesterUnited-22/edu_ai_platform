@@ -34,34 +34,12 @@ export function shuffleOptions(question, random = Math.random) {
   };
 }
 
-const neutral = z.object({ questions: z.array(z.unknown()) });
-
-export async function generateQuestions(
-  { classId, documentIds, count = 10, difficulty, topic },
-  deps = {},
-) {
-  const prisma = deps.prisma ?? defaultPrisma;
-  const random = deps.random ?? Math.random;
-
-  const chunks = await loadSourceChunks({ classId, documentIds }, deps);
-  const { questions: rawQuestions } = await generateValidated(
-    {
-      system: loadPrompt('questionGeneration'),
-      prompt: buildGenerationPrompt(chunks, [
-        `Số câu hỏi cần soạn: ${count}`,
-        difficulty
-          ? `Độ khó mong muốn: ${difficulty} (1 nhớ, 2 hiểu, 3 vận dụng)`
-          : 'Độ khó: trộn đều các mức 1, 2, 3',
-        topic && `Chủ đề trọng tâm: ${topic}`,
-      ]),
-      jsonSchema: questionsJsonSchema,
-      zodSchema: neutral,
-    },
-    deps,
-  );
-
-  const existing = await prisma.question.findMany({ where: { classId }, select: { text: true } });
-  const seen = new Set(existing.map((q) => normalizeKey(q.text)));
+/**
+ * Lọc câu hỏi thô do AI trả về: bỏ câu sai cấu trúc, trỏ nguồn không tồn tại, phương án mập mờ,
+ * trùng câu đã có/trùng trong lô; xáo trộn phương án. Dùng chung cho ngân hàng câu hỏi và quiz luyện tập.
+ * @returns {{accepted: object[], skipped: {invalid:number, badSource:number, badOptions:number, duplicate:number}}}
+ */
+export function filterGeneratedQuestions(rawQuestions, chunks, { count, seen = new Set(), random = Math.random }) {
   const skipped = { invalid: 0, badSource: 0, badOptions: 0, duplicate: 0 };
   const accepted = [];
 
@@ -88,8 +66,50 @@ export async function generateQuestions(
       continue;
     }
     seen.add(key);
-    accepted.push({ ...shuffleOptions(q, random), sourceChunkId: chunks[q.sourceRef - 1].id });
+    accepted.push({
+      ...shuffleOptions(q, random),
+      sourceChunkId: chunks[q.sourceRef - 1].id,
+      sourceIndex: q.sourceRef - 1,
+    });
   }
+  return { accepted, skipped };
+}
+
+const neutral = z.object({ questions: z.array(z.unknown()) });
+
+/** Gọi AI sinh câu hỏi thô từ các đoạn tài liệu. */
+export async function requestRawQuestions({ chunks, count, difficulty, topic }, deps = {}) {
+  const { questions } = await generateValidated(
+    {
+      system: loadPrompt('questionGeneration'),
+      prompt: buildGenerationPrompt(chunks, [
+        `Số câu hỏi cần soạn: ${count}`,
+        difficulty
+          ? `Độ khó mong muốn: ${difficulty} (1 nhớ, 2 hiểu, 3 vận dụng)`
+          : 'Độ khó: trộn đều các mức 1, 2, 3',
+        topic && `Chủ đề trọng tâm: ${topic}`,
+      ]),
+      jsonSchema: questionsJsonSchema,
+      zodSchema: neutral,
+    },
+    deps,
+  );
+  return questions;
+}
+
+export async function generateQuestions(
+  { classId, documentIds, count = 10, difficulty, topic },
+  deps = {},
+) {
+  const prisma = deps.prisma ?? defaultPrisma;
+  const random = deps.random ?? Math.random;
+
+  const chunks = await loadSourceChunks({ classId, documentIds }, deps);
+  const rawQuestions = await requestRawQuestions({ chunks, count, difficulty, topic }, deps);
+
+  const existing = await prisma.question.findMany({ where: { classId }, select: { text: true } });
+  const seen = new Set(existing.map((q) => normalizeKey(q.text)));
+  const { accepted, skipped } = filterGeneratedQuestions(rawQuestions, chunks, { count, seen, random });
 
   if (accepted.length === 0) {
     throw new AppError('AI không soạn được câu hỏi hợp lệ nào, hãy thử lại', 502, 'GENERATION_INVALID');

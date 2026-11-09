@@ -1,4 +1,4 @@
-// Lấy các đoạn tài liệu làm căn cứ cho AI sinh nội dung (đề cương, câu hỏi, outline)
+// Lấy các đoạn tài liệu làm căn cứ cho AI sinh nội dung (đề cương, câu hỏi, outline, quiz luyện tập)
 import defaultPrisma from '../../config/db.js';
 import { AppError } from '../../utils/AppError.js';
 
@@ -19,14 +19,21 @@ export function sampleChunks(chunks, maxChars = MAX_SOURCE_CHARS) {
 }
 
 /**
+ * @param {{classId:string, documentIds?:string[], publishedOnly?:boolean}} options
+ *   publishedOnly = true: chỉ lấy tài liệu ĐÃ XUẤT BẢN (dùng cho học sinh tự luyện tập).
  * @returns {Promise<{id:string, documentId:string, fileName:string, pageNumber:number|null, text:string}[]>}
  */
-export async function loadSourceChunks({ classId, documentIds }, deps = {}) {
+export async function loadSourceChunks({ classId, documentIds, publishedOnly = false }, deps = {}) {
   const prisma = deps.prisma ?? defaultPrisma;
   const requested = documentIds?.length ? [...new Set(documentIds)] : null;
 
   const documents = await prisma.document.findMany({
-    where: { classId, processStatus: 'ready', ...(requested ? { id: { in: requested } } : {}) },
+    where: {
+      classId,
+      processStatus: 'ready',
+      ...(publishedOnly ? { publishStatus: 'published' } : {}),
+      ...(requested ? { id: { in: requested } } : {}),
+    },
     select: { id: true, fileName: true },
     orderBy: { createdAt: 'asc' },
   });
@@ -39,7 +46,13 @@ export async function loadSourceChunks({ classId, documentIds }, deps = {}) {
     );
   }
   if (documents.length === 0) {
-    throw new AppError('Lớp chưa có tài liệu nào đã xử lý xong để làm căn cứ', 409, 'NO_SOURCE');
+    throw new AppError(
+      publishedOnly
+        ? 'Lớp chưa có tài liệu nào được xuất bản để luyện tập'
+        : 'Lớp chưa có tài liệu nào đã xử lý xong để làm căn cứ',
+      409,
+      'NO_SOURCE',
+    );
   }
 
   const rows = await prisma.chunk.findMany({

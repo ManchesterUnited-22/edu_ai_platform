@@ -5,9 +5,12 @@ import classRoutes from './class.routes.js';
 import contentRoutes from './content.routes.js';
 import documentRoutes from './document.routes.js';
 import feedbackRoutes from './feedback.routes.js';
+import practiceRoutes from './practice.routes.js';
+import progressRoutes from './progress.routes.js';
 import qaRoutes from './qa.routes.js';
-import quizRoutes from './quiz.routes.js';
 import questionRoutes from './question.routes.js';
+import quizRoutes from './quiz.routes.js';
+import reportRoutes from './report.routes.js';
 
 const router = Router();
 
@@ -19,5 +22,8 @@ router.use('/', feedbackRoutes);
 router.use('/', contentRoutes);
 router.use('/', questionRoutes);
 router.use('/', quizRoutes);
+router.use('/', practiceRoutes);
+router.use('/', progressRoutes);
+router.use('/', reportRoutes);
 
 export default router;
