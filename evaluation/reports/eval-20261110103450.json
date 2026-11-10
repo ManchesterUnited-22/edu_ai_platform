@@ -1,0 +1,187 @@
+{
+  "k": 5,
+  "threshold": 0.65,
+  "summary": {
+    "answerable": 6,
+    "unanswerable": 3,
+    "hitRate": 1,
+    "precision": 0.5833,
+    "recall": 1,
+    "mrr": 1,
+    "falseRefusalRate": 0,
+    "correctRefusalRate": 1
+  },
+  "sweep": [
+    {
+      "threshold": 0.4,
+      "answerRate": 1,
+      "correctRefusalRate": 0,
+      "balanced": 0.5
+    },
+    {
+      "threshold": 0.45,
+      "answerRate": 1,
+      "correctRefusalRate": 0.3333333333333333,
+      "balanced": 0.67
+    },
+    {
+      "threshold": 0.5,
+      "answerRate": 1,
+      "correctRefusalRate": 0.6666666666666666,
+      "balanced": 0.83
+    },
+    {
+      "threshold": 0.55,
+      "answerRate": 1,
+      "correctRefusalRate": 1,
+      "balanced": 1
+    },
+    {
+      "threshold": 0.6,
+      "answerRate": 1,
+      "correctRefusalRate": 1,
+      "balanced": 1
+    },
+    {
+      "threshold": 0.65,
+      "answerRate": 1,
+      "correctRefusalRate": 1,
+      "balanced": 1
+    },
+    {
+      "threshold": 0.7,
+      "answerRate": 1,
+      "correctRefusalRate": 1,
+      "balanced": 1
+    },
+    {
+      "threshold": 0.75,
+      "answerRate": 0.5,
+      "correctRefusalRate": 1,
+      "balanced": 0.75
+    },
+    {
+      "threshold": 0.8,
+      "answerRate": 0,
+      "correctRefusalRate": 1,
+      "balanced": 0.5
+    },
+    {
+      "threshold": 0.85,
+      "answerRate": 0,
+      "correctRefusalRate": 1,
+      "balanced": 0.5
+    },
+    {
+      "threshold": 0.9,
+      "answerRate": 0,
+      "correctRefusalRate": 1,
+      "balanced": 0.5
+    }
+  ],
+  "best": {
+    "threshold": 0.7,
+    "answerRate": 1,
+    "correctRefusalRate": 1,
+    "balanced": 1
+  },
+  "warnings": [],
+  "results": [
+    {
+      "id": "1",
+      "question": "Quang hợp diễn ra ở bào quan nào?",
+      "answerable": true,
+      "topScore": 0.7738,
+      "answered": true,
+      "hit": true,
+      "precision": 0.5,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 1
+    },
+    {
+      "id": "2",
+      "question": "Chất diệp lục có vai trò gì?",
+      "answerable": true,
+      "topScore": 0.7199,
+      "answered": true,
+      "hit": true,
+      "precision": 0.5,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 1
+    },
+    {
+      "id": "3",
+      "question": "Sản phẩm của quang hợp là gì?",
+      "answerable": true,
+      "topScore": 0.7601,
+      "answered": true,
+      "hit": true,
+      "precision": 1,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 2
+    },
+    {
+      "id": "4",
+      "question": "Cây xanh lấy năng lượng từ đâu để tạo chất hữu cơ?",
+      "answerable": true,
+      "topScore": 0.764,
+      "answered": true,
+      "hit": true,
+      "precision": 0.5,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 1
+    },
+    {
+      "id": "5",
+      "question": "Rễ cây có vai trò gì đối với quang hợp?",
+      "answerable": true,
+      "topScore": 0.7449,
+      "answered": true,
+      "hit": true,
+      "precision": 0.5,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 1
+    },
+    {
+      "id": "6",
+      "question": "Thiếu nước ảnh hưởng thế nào đến quang hợp?",
+      "answerable": true,
+      "topScore": 0.7052,
+      "answered": true,
+      "hit": true,
+      "precision": 0.5,
+      "recall": 1,
+      "reciprocalRank": 1,
+      "relevantTotal": 1
+    },
+    {
+      "id": "7",
+      "question": "Thủ đô của nước Pháp là gì?",
+      "answerable": false,
+      "topScore": 0.4922,
+      "answered": false,
+      "correctRefusal": true
+    },
+    {
+      "id": "8",
+      "question": "Công thức tính diện tích hình tròn là gì?",
+      "answerable": false,
+      "topScore": 0.5419,
+      "answered": false,
+      "correctRefusal": true
+    },
+    {
+      "id": "9",
+      "question": "Ai là tác giả của truyện Kiều?",
+      "answerable": false,
+      "topScore": 0.4433,
+      "answered": false,
+      "correctRefusal": true
+    }
+  ]
+}

@@ -49,7 +49,7 @@ export async function socraticStep({ problem, messages = [] }, deps = {}) {
   const unsafe = studentText.map((t) => checkTextSafety(t)).find((s) => !s.safe);
   if (unsafe) return refused('unsafe', unsafe.message);
 
-  const generate = deps.generate ?? ((p) => generateText({ system: p.system, prompt: p.user, temperature: 0.3, maxOutputTokens: 512 }));
+  const generate = deps.generate ?? ((p) => generateText({ system: p.system, prompt: p.user, temperature: 0.3, maxOutputTokens: 2048 }));
   const prompt = buildSocraticPrompt({ problem, messages });
   const { reply, guarded } = await guardedReply(generate, prompt);
   return { reply, hintLevel: prompt.level, refused: false, reason: guarded ? 'answer_blocked' : null };

@@ -1,1 +1,10 @@
 id,classId,question,expectedDocumentId,expectedChunkHint,answerable
+1,,Quang hợp diễn ra ở bào quan nào?,bai_quang_hop.docx,lục lạp,true
+2,,Chất diệp lục có vai trò gì?,bai_quang_hop.docx,diệp lục,true
+3,,Sản phẩm của quang hợp là gì?,bai_quang_hop.docx,oxi,true
+4,,Cây xanh lấy năng lượng từ đâu để tạo chất hữu cơ?,bai_quang_hop.docx,ánh sáng,true
+5,,Rễ cây có vai trò gì đối với quang hợp?,bai_quang_hop.docx,rễ,true
+6,,Thiếu nước ảnh hưởng thế nào đến quang hợp?,bai_quang_hop.docx,nước,true
+7,,Thủ đô của nước Pháp là gì?,,,false
+8,,Công thức tính diện tích hình tròn là gì?,,,false
+9,,Ai là tác giả của truyện Kiều?,,,false
