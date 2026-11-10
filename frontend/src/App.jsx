@@ -1,3 +1,10 @@
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes.jsx';
+
 export default function App() {
-  return <h1>Nền tảng hỗ trợ học tập ứng dụng AI</h1>;
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  );
 }

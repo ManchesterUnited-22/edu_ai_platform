@@ -1,4 +1,6 @@
-// API xác thực
+import client from './client.js';
 
-// TODO: triển khai
-export {};
+export const login = (email, password) =>
+  client.post('/auth/login', { email, password }).then((r) => r.data);
+
+export const me = () => client.get('/auth/me').then((r) => r.data.user);
