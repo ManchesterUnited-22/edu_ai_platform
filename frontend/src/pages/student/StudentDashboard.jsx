@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { createLinkCode } from '../../api/parents.js';
 import { errorMessage } from '../../api/client.js';
-import { Link } from 'react-router-dom';
+import Tile, { TileGroup } from '../../components/common/Tile.jsx';
+import { useAuthStore } from '../../store/authStore.js';
+
 function LinkCodeCard() {
   const [code, setCode] = useState(null);
   const [error, setError] = useState('');
@@ -18,7 +20,7 @@ function LinkCodeCard() {
   return (
     <div className="card">
       <h3>Liên kết với phụ huynh</h3>
-      <p>Tạo mã rồi đưa cho phụ huynh nhập. Mã dùng một lần, hết hạn sau ít phút.</p>
+      <p>Tạo mã rồi đưa cho phụ huynh nhập. Mã chỉ dùng được một lần và sẽ hết hạn.</p>
       <button className="btn" onClick={generate}>Tạo mã mới</button>
       {code && (
         <p>
@@ -33,18 +35,27 @@ function LinkCodeCard() {
 }
 
 export default function StudentDashboard() {
+  const user = useAuthStore((s) => s.user);
   return (
     <>
-      <h2>Trang học sinh</h2>
-      <div className="card">
-        <Link to="/student/materials">Tài liệu của lớp →</Link><br />
-        <Link to="/student/ask">Hỏi đáp theo tài liệu →</Link><br />
-        <Link to="/student/quizzes">Bài kiểm tra →</Link><br />
-        <Link to="/student/practice">Luyện tập →</Link><br />
-        <Link to="/student/progress">Tiến độ của em →</Link><br />
-        <Link to="/student/review">Gợi ý ôn tập →</Link><br />
-        <Link to="/student/socratic">Giải bài từng bước (Socratic) →</Link>
-      </div>
+      <h2>Chào {user.fullName}</h2>
+
+      <TileGroup title="Học">
+        <Tile to="/student/materials" title="Tài liệu">Đọc nội dung giáo viên đã đăng</Tile>
+        <Tile to="/student/ask" title="Hỏi đáp">Hỏi điều chưa hiểu, có trích nguồn từ tài liệu</Tile>
+        <Tile to="/student/socratic" title="Giải bài từng bước">Gia sư gợi ý dần, em tự tìm ra đáp án</Tile>
+      </TileGroup>
+
+      <TileGroup title="Kiểm tra">
+        <Tile to="/student/quizzes" title="Bài kiểm tra">Làm bài có tính giờ do giáo viên giao</Tile>
+        <Tile to="/student/practice" title="Luyện tập">Tự tạo bài luyện tập, không tính điểm chính thức</Tile>
+      </TileGroup>
+
+      <TileGroup title="Theo dõi">
+        <Tile to="/student/progress" title="Tiến độ">Điểm số và chủ đề cần ôn</Tile>
+        <Tile to="/student/review" title="Gợi ý ôn tập">Nên ôn gì trước, đọc ở đâu</Tile>
+      </TileGroup>
+
       <LinkCodeCard />
     </>
   );

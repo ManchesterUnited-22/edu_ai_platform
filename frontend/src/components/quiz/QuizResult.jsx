@@ -6,10 +6,14 @@ export default function QuizResult({ data, onClose }) {
   return (
     <>
       <div className="card">
-        <h3>Kết quả</h3>
-        <p>
-          Điểm: <strong>{Number(info.score).toFixed(1)}</strong> / 10 · Đúng {info.correct}/{info.total}
-        </p>
+               <h3>Kết quả</h3>
+        <div className="grade-row">
+          <span className="grade">
+            {Number(info.score).toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            <small>/10</small>
+          </span>
+          <span>Đúng {info.correct}/{info.total} câu</span>
+        </div>
         {data.late && <p className="error">Nộp muộn: bài được chấm theo thời điểm hết giờ.</p>}
         {onClose && <button className="btn btn-light" onClick={onClose}>Đóng</button>}
       </div>

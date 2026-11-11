@@ -35,8 +35,15 @@ export default function LoginPage() {
   return (
     <form className="card auth-card" onSubmit={submit}>
       <h2>Đăng nhập</h2>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <p>Dùng tài khoản học sinh, giáo viên hoặc phụ huynh của bạn.</p>
+      <label className="field">
+        Email
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+      </label>
+      <label className="field">
+        Mật khẩu
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+      </label>
       {error && <p className="error">{error}</p>}
       <button className="btn" disabled={busy}>{busy ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
     </form>
