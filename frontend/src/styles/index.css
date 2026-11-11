@@ -20,3 +20,23 @@ input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size:
 .read { opacity: .65; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e5e7eb; }
+textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; margin-bottom: 8px; }
+select { padding: 9px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; }
+.chat { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.bubble { max-width: 80%; padding: 8px 12px; border-radius: 10px; }
+.bubble p { margin: 4px 0 0; white-space: pre-wrap; }
+.bubble.tutor { background: #e0e7ff; align-self: flex-start; }
+.bubble.student { background: #dcfce7; align-self: flex-end; }
+blockquote { margin: 8px 0; padding: 8px 12px; border-left: 3px solid #93c5fd; background: #f8fafc; }
+.x { border: 0; background: none; cursor: pointer; font-size: 16px; line-height: 1; }
+.option { display: block; padding: 8px 10px; margin: 6px 0; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; }
+.option.chosen { border-color: #2563eb; background: #eff6ff; }
+.option.correct { border-color: #16a34a; background: #dcfce7; }
+.option.wrong { border-color: #dc2626; background: #fee2e2; }
+.bubble.refused { background: #fef3c7; }
+.sticky { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; }
+.timer { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.status-published, .status-ready, .status-resolved { background: #dcfce7; }
+.status-reviewed, .status-processing, .status-uploaded { background: #dbeafe; }
+.status-failed { background: #fee2e2; }
+.status-revoked, .status-dismissed { background: #e5e7eb; }

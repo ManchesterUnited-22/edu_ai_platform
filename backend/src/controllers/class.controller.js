@@ -95,8 +95,8 @@ export const enrollStudent = async (req, res, next) => {
       throw new AppError('Chỉ giáo viên của lớp mới có thể ghi danh', 403, 'FORBIDDEN');
     }
 
-    const student = await prisma.user.findUnique({
-      where: { id: req.body.studentId },
+        const student = await prisma.user.findUnique({
+      where: req.body.studentId ? { id: req.body.studentId } : { email: req.body.email },
       select: { id: true, role: true },
     });
 

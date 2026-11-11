@@ -5,6 +5,7 @@ export const createClassSchema = z.object({
   subject: z.string().trim().min(2).max(100),
 });
 
-export const enrollmentSchema = z.object({
-  studentId: z.string().uuid(),
-});
+export const enrollmentSchema = z.union([
+  z.object({ studentId: z.string().uuid() }),
+  z.object({ email: z.string().trim().toLowerCase().email() }),
+]);

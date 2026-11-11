@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createLinkCode } from '../../api/parents.js';
 import { errorMessage } from '../../api/client.js';
-
+import { Link } from 'react-router-dom';
 function LinkCodeCard() {
   const [code, setCode] = useState(null);
   const [error, setError] = useState('');
@@ -36,6 +36,15 @@ export default function StudentDashboard() {
   return (
     <>
       <h2>Trang học sinh</h2>
+      <div className="card">
+        <Link to="/student/materials">Tài liệu của lớp →</Link><br />
+        <Link to="/student/ask">Hỏi đáp theo tài liệu →</Link><br />
+        <Link to="/student/quizzes">Bài kiểm tra →</Link><br />
+        <Link to="/student/practice">Luyện tập →</Link><br />
+        <Link to="/student/progress">Tiến độ của em →</Link><br />
+        <Link to="/student/review">Gợi ý ôn tập →</Link><br />
+        <Link to="/student/socratic">Giải bài từng bước (Socratic) →</Link>
+      </div>
       <LinkCodeCard />
     </>
   );

@@ -1,4 +1,4 @@
-// API gợi ý ôn tập
+import client from './client.js';
 
-// TODO: triển khai
-export {};
+export const getRecommendations = (classId) =>
+  client.get(`/classes/${classId}/recommendations`).then((r) => r.data);

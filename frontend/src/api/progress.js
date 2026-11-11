@@ -1,4 +1,4 @@
-// API tiến độ
+import client from './client.js';
 
-// TODO: triển khai
-export {};
+export const getMyProgress = (classId) =>
+  client.get(`/classes/${classId}/progress`).then((r) => r.data.progress);
