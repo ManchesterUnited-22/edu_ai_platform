@@ -23,13 +23,19 @@ const NAV = {
 };
 const ROLE = { student: 'Học sinh', teacher: 'Giáo viên', parent: 'Phụ huynh' };
 
+// Chữ cái đầu của tên (từ cuối cùng trong họ tên Việt)
+const initial = (name = '') => name.trim().split(/\s+/).pop()?.[0]?.toUpperCase() ?? '?';
+
 export default function Header() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
   return (
     <header className="header">
-      <Link to="/" className="brand">Học tập AI</Link>
+      <Link to="/" className="brand">
+        <span className="brand-logo" aria-hidden="true">🎓</span>
+        <span className="brand-text">Học tập AI</span>
+      </Link>
       {user && (
         <>
           <nav className="nav" aria-label="Menu chính">
@@ -38,8 +44,14 @@ export default function Header() {
             ))}
           </nav>
           <div className="header-right">
-            <span>{user.fullName} <small>({ROLE[user.role]})</small></span>
-            <button className="btn btn-light" onClick={() => { logout(); navigate('/login'); }}>
+            <div className="user-chip">
+              <span className="avatar" aria-hidden="true">{initial(user.fullName)}</span>
+              <span className="user-meta">
+                <strong>{user.fullName}</strong>
+                <small>{ROLE[user.role]}</small>
+              </span>
+            </div>
+            <button className="btn btn-light btn-sm" onClick={() => { logout(); navigate('/login'); }}>
               Đăng xuất
             </button>
           </div>
