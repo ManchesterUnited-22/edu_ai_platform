@@ -38,25 +38,22 @@ export default function StudentDashboard() {
   const user = useAuthStore((s) => s.user);
   return (
     <>
-      <section className="hero">
-        <h2>Chào {user.fullName} <span className="wave">👋</span></h2>
-        <p>Hôm nay mình cùng học gì nào? Chọn một mục bên dưới để bắt đầu nhé.</p>
-      </section>
+      <h2>Chào {user.fullName}</h2>
 
       <TileGroup title="Học">
-        <Tile to="/student/materials" icon="📚" color="violet" title="Tài liệu">Đọc nội dung giáo viên đã đăng</Tile>
-        <Tile to="/student/ask" icon="💬" color="cyan" title="Hỏi đáp">Hỏi điều chưa hiểu, có trích nguồn từ tài liệu</Tile>
-        <Tile to="/student/socratic" icon="🧠" color="pink" title="Giải bài từng bước">Gia sư gợi ý dần, em tự tìm ra đáp án</Tile>
+        <Tile to="/student/materials" icon="book" title="Tài liệu">Đọc nội dung giáo viên đã đăng</Tile>
+        <Tile to="/student/ask" icon="chat" title="Hỏi đáp">Hỏi điều chưa hiểu, có trích nguồn từ tài liệu</Tile>
+        <Tile to="/student/socratic" icon="steps" title="Giải bài từng bước">Gia sư gợi ý dần, em tự tìm ra đáp án</Tile>
       </TileGroup>
 
       <TileGroup title="Kiểm tra">
-        <Tile to="/student/quizzes" icon="⏱️" color="orange" title="Bài kiểm tra">Làm bài có tính giờ do giáo viên giao</Tile>
-        <Tile to="/student/practice" icon="🎯" color="green" title="Luyện tập">Tự tạo bài luyện tập, không tính điểm chính thức</Tile>
+        <Tile to="/student/quizzes" icon="clipboard" tone="ochre" title="Bài kiểm tra">Làm bài có tính giờ do giáo viên giao</Tile>
+        <Tile to="/student/practice" icon="pencil" tone="ochre" title="Luyện tập">Tự tạo bài luyện tập, không tính điểm chính thức</Tile>
       </TileGroup>
 
       <TileGroup title="Theo dõi">
-        <Tile to="/student/progress" icon="📈" color="violet" title="Tiến độ">Điểm số và chủ đề cần ôn</Tile>
-        <Tile to="/student/review" icon="💡" color="orange" title="Gợi ý ôn tập">Nên ôn gì trước, đọc ở đâu</Tile>
+        <Tile to="/student/progress" icon="chart" tone="sage" title="Tiến độ">Điểm số và chủ đề cần ôn</Tile>
+        <Tile to="/student/review" icon="bulb" tone="sage" title="Gợi ý ôn tập">Nên ôn gì trước, đọc ở đâu</Tile>
       </TileGroup>
 
       <LinkCodeCard />

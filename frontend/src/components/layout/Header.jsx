@@ -1,30 +1,7 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore.js';
 
-// [đường dẫn, tên hiển thị, chỉ khớp đúng đường dẫn]
-const NAV = {
-  student: [
-    ['/student', 'Trang học', true],
-    ['/student/materials', 'Tài liệu'],
-    ['/student/ask', 'Hỏi đáp'],
-    ['/student/quizzes', 'Kiểm tra'],
-    ['/student/practice', 'Luyện tập'],
-    ['/student/progress', 'Tiến độ'],
-  ],
-  teacher: [
-    ['/teacher', 'Tổng quan', true],
-    ['/teacher/classes', 'Lớp học'],
-    ['/teacher/topics', 'Chủ đề'],
-  ],
-  parent: [
-    ['/parent', 'Con của tôi', true],
-    ['/parent/alerts', 'Cảnh báo'],
-  ],
-};
 const ROLE = { student: 'Học sinh', teacher: 'Giáo viên', parent: 'Phụ huynh' };
-
-// Chữ cái đầu của tên (từ cuối cùng trong họ tên Việt)
-const initial = (name = '') => name.trim().split(/\s+/).pop()?.[0]?.toUpperCase() ?? '?';
 
 export default function Header() {
   const { user, logout } = useAuthStore();
@@ -33,29 +10,18 @@ export default function Header() {
   return (
     <header className="header">
       <Link to="/" className="brand">
-        <span className="brand-logo" aria-hidden="true">🎓</span>
-        <span className="brand-text">Học tập AI</span>
+        <span className="brand-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z M9 9h6" /></svg>
+        </span>
+        Học tập AI
       </Link>
       {user && (
-        <>
-          <nav className="nav" aria-label="Menu chính">
-            {(NAV[user.role] ?? []).map(([to, label, end]) => (
-              <NavLink key={to} to={to} end={end}>{label}</NavLink>
-            ))}
-          </nav>
-          <div className="header-right">
-            <div className="user-chip">
-              <span className="avatar" aria-hidden="true">{initial(user.fullName)}</span>
-              <span className="user-meta">
-                <strong>{user.fullName}</strong>
-                <small>{ROLE[user.role]}</small>
-              </span>
-            </div>
-            <button className="btn btn-light btn-sm" onClick={() => { logout(); navigate('/login'); }}>
-              Đăng xuất
-            </button>
-          </div>
-        </>
+        <div className="header-right">
+          <span className="who">{user.fullName} <small>({ROLE[user.role]})</small></span>
+          <button className="btn btn-light" onClick={() => { logout(); navigate('/login'); }}>
+            Đăng xuất
+          </button>
+        </div>
       )}
     </header>
   );

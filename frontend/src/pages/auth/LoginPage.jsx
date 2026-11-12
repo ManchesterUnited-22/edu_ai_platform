@@ -12,7 +12,6 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [show, setShow] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -34,34 +33,28 @@ export default function LoginPage() {
   };
 
   return (
-    <form className="auth-shell" onSubmit={submit}>
-      <aside className="auth-side">
-        <h2>Học tập cùng AI 🚀</h2>
-        <p>Nền tảng giúp giáo viên, học sinh và phụ huynh cùng đồng hành.</p>
+    <div className="login">
+      <section className="login-brand">
+        <h1>Học từ chính tài liệu của lớp mình</h1>
         <ul>
-          <li><span>💬</span> Hỏi đáp có trích nguồn từ tài liệu</li>
-          <li><span>🧠</span> Gia sư gợi ý từng bước</li>
-          <li><span>📈</span> Theo dõi tiến độ theo chủ đề</li>
+          <li>Hỏi đáp có trích dẫn nguồn. Không có trong tài liệu thì nói thẳng là chưa có.</li>
+          <li>Gia sư gợi ý từng bước để em tự tìm ra đáp án.</li>
+          <li>Phụ huynh theo dõi tiến độ và nhận cảnh báo sớm.</li>
         </ul>
-      </aside>
-
-      <div className="auth-form">
+      </section>
+      <form className="login-form" onSubmit={submit}>
         <h2>Đăng nhập</h2>
-        <p>Dùng tài khoản học sinh, giáo viên hoặc phụ huynh của bạn.</p>
         <label className="field">
           Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" placeholder="ten@email.com" />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
         </label>
         <label className="field">
           Mật khẩu
-          <div className="input-wrap">
-            <input type={show ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" placeholder="••••••••" />
-            <button type="button" onClick={() => setShow((v) => !v)}>{show ? 'Ẩn' : 'Hiện'}</button>
-          </div>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
         </label>
         {error && <p className="error">{error}</p>}
         <button className="btn" disabled={busy}>{busy ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

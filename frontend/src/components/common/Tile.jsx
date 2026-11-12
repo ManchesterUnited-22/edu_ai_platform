@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
+import Icon from './Icon.jsx';
 
-// color: 'violet' | 'pink' | 'cyan' | 'orange' | 'green'
-export default function Tile({ to, title, icon, color = 'violet', children }) {
+// tone: 'blue' | 'sage' | 'ochre'
+export default function Tile({ to, title, icon, tone = 'blue', children }) {
   return (
     <Link to={to} className="tile">
-      {icon && <span className={`tile-icon ${color}`} aria-hidden="true">{icon}</span>}
-      <span className="tile-body">
+      <span className={`icon-badge ${tone}`}><Icon name={icon} /></span>
+      <span className="tile-text">
         <strong>{title}</strong>
         <span>{children}</span>
       </span>
