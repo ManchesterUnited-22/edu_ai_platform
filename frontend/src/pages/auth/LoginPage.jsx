@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { login } from '../../api/auth.js';
 import { errorMessage } from '../../api/client.js';
 import { useAuthStore } from '../../store/authStore.js';
-
+import { Link } from 'react-router-dom';
 export const homeFor = (role) =>
   ({ parent: '/parent', student: '/student', teacher: '/teacher' })[role] ?? '/login';
 

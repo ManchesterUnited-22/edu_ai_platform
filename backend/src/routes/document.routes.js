@@ -6,6 +6,7 @@ import {
   listDocuments,
   reprocessDocument,
   uploadDocument,
+  viewDocumentFile,
 } from '../controllers/document.controller.js';
 import {
   publish,
@@ -39,7 +40,8 @@ router.get(
   listDocuments,
 );
 router.get('/documents/:documentId', authenticate, requireRole('teacher', 'student'), getDocument);
-router.post('/documents/:documentId/reprocess', ...teacherOnly, reprocessDocument);
+router.get('/documents/:documentId/view', authenticate, requireRole('teacher', 'student'), viewDocumentFile);
+router.get('/documents/:documentId/file', authenticate, requireRole('teacher', 'student'), viewDocumentFile);
 router.delete('/documents/:documentId', ...teacherOnly, deleteDocument);
 
 // Bước duyệt bắt buộc -> xuất bản -> thu hồi

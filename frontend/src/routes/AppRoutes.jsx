@@ -34,7 +34,11 @@ import WrongAnswerReportsPage from '../pages/teacher/WrongAnswerReportsPage.jsx'
 
 import { useAuthStore } from '../store/authStore.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
+<<<<<<< HEAD
 
+=======
+import RegisterPage from '../pages/auth/RegisterPage.jsx';
+>>>>>>> 9c973b8 (chỉnh sửa xem file)
 function Home() {
   const user = useAuthStore((s) => s.user);
   return <Navigate to={user ? homeFor(user.role) : '/login'} replace />;
@@ -52,6 +56,7 @@ export default function AppRoutes() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
+<<<<<<< HEAD
 
             <Route element={<ProtectedRoute role="parent" />}>
               <Route path="/parent" element={<ParentDashboard />} />
@@ -84,6 +89,40 @@ export default function AppRoutes() {
               <Route path="/teacher/classes/:classId/reports" element={<WrongAnswerReportsPage />} />
             </Route>
 
+=======
+            <Route path="/register" element={<RegisterPage />} />
+            <Route element={<ProtectedRoute role="parent" />}>
+              <Route path="/parent" element={<ParentDashboard />} />
+              <Route path="/parent/link" element={<LinkChildPage />} />
+              <Route path="/parent/children/:studentId" element={<ChildProgressPage />} />
+              <Route path="/parent/alerts" element={<AlertsPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute role="student" />}>
+              <Route path="/student" element={<StudentDashboard />} />
+              <Route path="/student/materials" element={<MaterialsPage />} />
+              <Route path="/student/ask" element={<AskPage />} />
+              <Route path="/student/socratic" element={<SocraticPage />} />
+              <Route path="/student/quizzes" element={<OfficialQuizPage />} />
+              <Route path="/student/practice" element={<PracticeQuizPage />} />
+              <Route path="/student/progress" element={<MyProgressPage />} />
+              <Route path="/student/review" element={<ReviewSuggestionsPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute role="teacher" />}>
+              <Route path="/teacher" element={<TeacherDashboard />} />
+              <Route path="/teacher/topics" element={<TopicManagePage />} />
+              <Route path="/teacher/classes" element={<ClassListPage />} />
+              <Route path="/teacher/classes/:classId" element={<ClassDetailPage />} />
+              <Route path="/teacher/classes/:classId/documents" element={<DocumentUploadPage />} />
+              <Route path="/teacher/classes/:classId/outlines" element={<GenerateOutlinePage />} />
+              <Route path="/teacher/classes/:classId/questions" element={<GenerateQuestionsPage />} />
+              <Route path="/teacher/classes/:classId/quizzes" element={<QuizManagePage />} />
+              <Route path="/teacher/classes/:classId/report" element={<ClassReportPage />} />
+              <Route path="/teacher/classes/:classId/reports" element={<WrongAnswerReportsPage />} />
+            </Route>
+
+>>>>>>> 9c973b8 (chỉnh sửa xem file)
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

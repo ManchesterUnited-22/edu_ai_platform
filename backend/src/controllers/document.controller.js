@@ -2,7 +2,9 @@ import prisma from '../config/db.js';
 import { enqueueDocument } from '../jobs/documentQueue.js';
 import { deleteByDocument } from '../services/rag/vectorStore.js';
 import { AppError } from '../utils/AppError.js';
-import { removeUploadedFile } from '../utils/files.js';
+import path from 'node:path';
+import mammoth from 'mammoth';
+import { removeUploadedFile, resolveUploadPath } from '../utils/files.js';
 
 // Không trả filePath ra ngoài (đường dẫn nội bộ của server)
 export const documentSelect = {
@@ -137,6 +139,36 @@ export const deleteDocument = async (req, res, next) => {
     await prisma.document.delete({ where: { id: doc.id } }); // chunk xóa theo (cascade)
     await removeUploadedFile(doc.filePath);
     return res.status(204).send();
+  } catch (error) {
+    return next(error);
+  }
+};
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+const pageHtml = (body) => `<!doctype html><html lang="vi"><head><meta charset="utf-8"><style>
+body{font:16px/1.7 Georgia,'Times New Roman',serif;color:#1f2a3c;max-width:760px;margin:0 auto;padding:32px 24px}
+img{max-width:100%;height:auto}
+table{border-collapse:collapse;width:100%}
+td,th{border:1px solid #cbd5e1;padding:6px 10px;vertical-align:top}
+h1,h2,h3{line-height:1.3}
+</style></head><body>${body}</body></html>`;
+
+/** Cho xem file gốc: PDF/ảnh trả nguyên file, DOCX chuyển sang HTML. */
+export const viewDocumentFile = async (req, res, next) => {
+  try {
+    const doc = await loadDocumentForUser(req.params.documentId, req.user, 'read');
+    const filePath = path.resolve(resolveUploadPath(doc.filePath));
+
+    if (doc.mimeType === DOCX_MIME) {
+      const { value } = await mammoth.convertToHtml({ path: filePath });
+      return res.type('html').send(pageHtml(value));
+    }
+
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename*=UTF-8''${encodeURIComponent(doc.fileName)}`,
+    );
+    return res.type(doc.mimeType).sendFile(filePath);
   } catch (error) {
     return next(error);
   }

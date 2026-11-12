@@ -13,3 +13,6 @@ export const uploadDocument = (classId, file) => {
 export const documentAction = (documentId, action) =>
   client.post(`/documents/${documentId}/${action}`).then((r) => r.data);
 export const deleteDocument = (documentId) => client.delete(`/documents/${documentId}`);
+// Lấy file gốc dạng blob (axios gắn sẵn token đăng nhập, iframe thì không gắn được)
+export const fetchDocumentFile = (documentId) =>
+  client.get(`/documents/${documentId}/file`, { responseType: 'blob' }).then((r) => r.data);

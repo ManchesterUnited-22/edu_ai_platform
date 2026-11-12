@@ -13,7 +13,13 @@ export const publicUser = ({ id, email, fullName, role, createdAt }) => ({
 
 export const register = async (req, res, next) => {
   try {
-    const { email, password, fullName } = req.body;
+       const { email, password, fullName, role = 'student', inviteCode } = req.body;
+
+    // Nếu đặt TEACHER_INVITE_CODE trong .env thì đăng ký giáo viên phải nhập đúng mã
+    const teacherCode = process.env.TEACHER_INVITE_CODE;
+    if (role === 'teacher' && teacherCode && inviteCode !== teacherCode) {
+      throw new AppError('Mã giáo viên không đúng', 403, 'INVALID_INVITE_CODE');
+    }
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
@@ -25,7 +31,7 @@ export const register = async (req, res, next) => {
         email,
         passwordHash: await hashPassword(password),
         fullName,
-        role: 'student',
+        role,
       },
     });
 
