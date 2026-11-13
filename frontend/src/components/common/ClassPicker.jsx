@@ -21,7 +21,7 @@ export default function ClassPicker({ value, onChange }) {
   if (classes.length === 0) return <p>Chưa có lớp nào.</p>;
 
   return (
-    <label>
+    <label className="class-picker">
       Lớp:{' '}
       <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         {classes.map((c) => (

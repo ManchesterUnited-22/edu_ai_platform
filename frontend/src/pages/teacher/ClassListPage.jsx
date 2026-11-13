@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createClass, listClasses } from '../../api/classes.js';
 import { errorMessage } from '../../api/client.js';
 
@@ -8,9 +8,18 @@ export default function ClassListPage() {
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
   const [error, setError] = useState('');
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q')?.trim().toLocaleLowerCase('vi-VN') ?? '';
 
   const load = () => listClasses().then(setClasses).catch((e) => setError(errorMessage(e)));
   useEffect(() => { load(); }, []);
+
+  const visibleClasses = useMemo(() => {
+    if (!query) return classes ?? [];
+    return (classes ?? []).filter((item) =>
+      `${item.name} ${item.subject}`.toLocaleLowerCase('vi-VN').includes(query),
+    );
+  }, [classes, query]);
 
   const create = async (e) => {
     e.preventDefault();
@@ -39,7 +48,8 @@ export default function ClassListPage() {
       </form>
       {error && <p className="error">{error}</p>}
       {classes?.length === 0 && <p>Chưa có lớp nào.</p>}
-      {classes?.map((c) => (
+      {classes?.length > 0 && visibleClasses.length === 0 && <p>Không tìm thấy lớp phù hợp với “{searchParams.get('q')}”.</p>}
+      {visibleClasses.map((c) => (
         <div className="card" key={c.id}>
           <Link to={`/teacher/classes/${c.id}`}><strong>{c.name}</strong></Link>{' '}
           <small>{c.subject} · {c._count.enrollments} học sinh</small>

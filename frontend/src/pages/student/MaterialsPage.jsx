@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { listDocuments } from '../../api/documents.js';
 import { errorMessage } from '../../api/client.js';
 import ClassPicker from '../../components/common/ClassPicker.jsx';
@@ -13,6 +13,8 @@ export default function MaterialsPage() {
   const [docs, setDocs] = useState(null);
   const [open, setOpen] = useState(null);
   const [error, setError] = useState('');
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q')?.trim().toLocaleLowerCase('vi-VN') ?? '';
 
   useEffect(() => {
     if (!classId) return;
@@ -21,11 +23,10 @@ export default function MaterialsPage() {
     setError('');
     listDocuments(classId).then(setDocs).catch((err) => setError(errorMessage(err)));
   }, [classId]);
-    // đang đọc tài liệu thì bung rộng trang (CSS .reading)
-  useEffect(() => {
-    document.body.classList.toggle('reading', !!open);
-    return () => document.body.classList.remove('reading');
-  }, [open]);
+  const visibleDocs = useMemo(() => {
+    if (!query) return docs ?? [];
+    return (docs ?? []).filter((doc) => doc.fileName.toLocaleLowerCase('vi-VN').includes(query));
+  }, [docs, query]);
 
   return (
     <>
@@ -43,7 +44,8 @@ export default function MaterialsPage() {
       {open && <DocumentViewer doc={open} />}
 
       {!open && docs?.length === 0 && <p>Giáo viên chưa đăng tài liệu nào.</p>}
-      {!open && docs?.map((d) => (
+      {!open && docs?.length > 0 && visibleDocs.length === 0 && <p>Không tìm thấy tài liệu phù hợp với “{searchParams.get('q')}”.</p>}
+      {!open && visibleDocs.map((d) => (
         <div className="card" key={d.id}>
           <div className="row" style={{ justifyContent: 'space-between' }}>
             <span>

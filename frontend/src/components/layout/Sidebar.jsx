@@ -70,21 +70,23 @@ function TeacherClassNav() {
   }
 
   return (
-    <>
+    <div className="side-group side-class-group">
       <div className="side-title">Lớp đang chọn</div>
       <div className="side-class">
         <select value={current} onChange={onChange} aria-label="Chọn lớp">
           {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
-      {CLASS_NAV.map(([sub, label, icon, end, badge]) => (
-        <NavLink key={sub} to={`/teacher/classes/${current}${sub}`} end={end} className="side-link">
-          <Icon name={icon} />
-          {label}
-          {badge && openReports > 0 && <span className="badge side-badge">{openReports}</span>}
-        </NavLink>
-      ))}
-    </>
+      <div className="side-subnav">
+        {CLASS_NAV.map(([sub, label, icon, end, badge]) => (
+          <NavLink key={sub} to={`/teacher/classes/${current}${sub}`} end={end} className="side-link">
+            <Icon name={icon} />
+            {label}
+            {badge && openReports > 0 && <span className="badge side-badge">{openReports}</span>}
+          </NavLink>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -95,7 +97,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       <nav aria-label="Menu chính">
         {(NAV[user.role] ?? []).map((group, i) => (
-          <div key={i}>
+          <div className="side-group" key={i}>
             {group.title && <div className="side-title">{group.title}</div>}
             {group.items.map(([to, label, icon, end]) => (
               <NavLink key={to} to={to} end={end} className="side-link">

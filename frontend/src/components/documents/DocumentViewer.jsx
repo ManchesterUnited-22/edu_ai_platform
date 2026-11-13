@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchDocumentFile } from '../../api/documents.js';
 import formatMath from '../../utils/formatMath.js';
 
@@ -19,7 +19,6 @@ export default function DocumentViewer({ doc }) {
   const [url, setUrl] = useState(null);
   const [html, setHtml] = useState(null);
   const [error, setError] = useState('');
-  const wrapRef = useRef(null);
 
   useEffect(() => {
     let objectUrl = null;
@@ -46,18 +45,15 @@ export default function DocumentViewer({ doc }) {
     };
   }, [doc.id, doc.mimeType]);
 
-  const fullscreen = () => wrapRef.current?.requestFullscreen?.();
-
   if (error) return <p className="error">{error}</p>;
   if (!url && !html) return <p>Đang mở tài liệu...</p>;
 
   const isImage = doc.mimeType.startsWith('image/');
   return (
-    <div className="doc-wrap" ref={wrapRef}>
+    <div className="doc-wrap">
       <div className="doc-bar">
-        <button className="btn btn-light" onClick={fullscreen}>Toàn màn hình</button>
-        {url && <a href={url} download={doc.fileName}>Tải file về máy</a>}
-        <small>Nhấn Esc để thoát toàn màn hình</small>
+        <small>Đang xem trong khu vực tài liệu của lớp</small>
+        {url && <a className="doc-download" href={url} download={doc.fileName}>Tải file về máy</a>}
       </div>
       {isImage && <img className="doc-image" src={url} alt={doc.fileName} />}
       {doc.mimeType === DOCX && (

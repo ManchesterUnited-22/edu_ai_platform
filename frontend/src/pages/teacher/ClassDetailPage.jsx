@@ -42,7 +42,7 @@ export default function ClassDetailPage() {
     <>
       <Link to="/teacher/classes">← Các lớp</Link>
       <h2>{cls ? `${cls.name} (${cls.subject})` : 'Lớp học'}</h2>
-      <div className="card">
+      <div className="card quick-links">
         <Link to={`/teacher/classes/${classId}/documents`}>Tài liệu: tải lên, duyệt, xuất bản →</Link><br />
         <Link to={`/teacher/classes/${classId}/outlines`}>Đề cương và outline bài giảng (AI) →</Link><br />
         <Link to={`/teacher/classes/${classId}/questions`}>Câu hỏi (AI) →</Link><br />

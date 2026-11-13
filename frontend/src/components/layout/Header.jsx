@@ -90,7 +90,7 @@ export default function Header() {
                 aria-expanded={open}
                 onClick={() => setOpen((v) => !v)}
               >
-                <span className="avatar" aria-hidden="true">{initials(user.fullName)}</span>
+                <span className="hd-avatar" aria-hidden="true">{initials(user.fullName)}</span>
                 <span className="who">
                   <strong>{user.fullName}</strong>
                   <small>{ROLE[user.role]}</small>

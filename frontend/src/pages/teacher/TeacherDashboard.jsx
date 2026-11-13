@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import client, { errorMessage } from '../../api/client.js';
-import Tile from '../../components/common/Tile.jsx';
 import { useClassStore } from '../../store/classStore.js';
 const fmt = (n) => (n == null ? '–' : Number(n).toLocaleString('vi-VN', { maximumFractionDigits: 1 }));
 const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
@@ -277,34 +276,34 @@ export default function TeacherDashboard() {
         </div>
       )}
 
-      {/* ===== Ô CHỨC NĂNG (giữ nguyên như trước) ===== */}
-      <section className="tile-group">
-        <h3>Quản lý</h3>
-        <div className="tiles">
-          <Tile to="/teacher/classes" title="Lớp học" icon="class" tone="blue">Tạo lớp, thêm học sinh bằng email</Tile>
-          <Tile to="/teacher/topics" title="Chủ đề" icon="topics" tone="blue">Quản lý chủ đề và quan hệ kiến thức</Tile>
-        </div>
-      </section>
-
       {hasClass && (
-        <>
-          <section className="tile-group">
-            <h3>Soạn bài cho lớp đang chọn</h3>
-            <div className="tiles">
-              <Tile to={`${base}/documents`} title="Tài liệu" icon="book" tone="blue">Tải tài liệu lên, duyệt và xuất bản</Tile>
-              <Tile to={`${base}/outlines`} title="Dàn ý bài giảng" icon="steps" tone="blue">Tạo dàn ý từ tài liệu</Tile>
-              <Tile to={`${base}/questions`} title="Ngân hàng câu hỏi" icon="pencil" tone="ochre">Tạo và duyệt câu hỏi</Tile>
-              <Tile to={`${base}/quizzes`} title="Bài kiểm tra" icon="clipboard" tone="ochre">Tạo, xuất bản bài kiểm tra</Tile>
+        <section className="teacher-next">
+          <div className="teacher-next-head">
+            <div>
+              <span className="form-kicker">GỢI Ý TIẾP THEO</span>
+              <h3>Biến lớp học thành một lộ trình rõ ràng</h3>
+              <p>Hoàn thiện từng bước nhỏ để học sinh có nội dung, bài luyện tập và phản hồi hữu ích.</p>
             </div>
-          </section>
-          <section className="tile-group">
-            <h3>Theo dõi</h3>
-            <div className="tiles">
-              <Tile to={`${base}/report`} title="Báo cáo lớp" icon="chart" tone="sage">Điểm số, chủ đề yếu, câu hỏi khó</Tile>
-              <Tile to={`${base}/reports`} title="Báo cáo trả lời sai" icon="bell" tone="sage">Xem và xử lý phản hồi của học sinh</Tile>
-            </div>
-          </section>
-        </>
+            <span className="teacher-next-mark">✦</span>
+          </div>
+          <div className="teacher-next-list">
+            <Link to={`${base}/documents`} className="teacher-next-item">
+              <span className="next-number">01</span>
+              <span><strong>Đưa tài liệu đầu tiên lên lớp</strong><small>AI sẽ dùng nội dung này làm nền cho hỏi đáp.</small></span>
+              <span className="next-arrow">→</span>
+            </Link>
+            <Link to={`${base}/quizzes`} className="teacher-next-item">
+              <span className="next-number">02</span>
+              <span><strong>Tạo một bài kiểm tra ngắn</strong><small>Đo mức độ nắm bài và phát hiện lỗ hổng sớm.</small></span>
+              <span className="next-arrow">→</span>
+            </Link>
+            <Link to={`${base}/reports`} className="teacher-next-item">
+              <span className="next-number">03</span>
+              <span><strong>Xem phản hồi cần xử lý</strong><small>Ưu tiên những câu hỏi học sinh chưa tìm được câu trả lời.</small></span>
+              <span className="next-arrow">→</span>
+            </Link>
+          </div>
+        </section>
       )}
     </>
   );
