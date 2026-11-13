@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import client, { errorMessage } from '../../api/client.js';
 import Tile from '../../components/common/Tile.jsx';
-
+import { useClassStore } from '../../store/classStore.js';
 const fmt = (n) => (n == null ? '–' : Number(n).toLocaleString('vi-VN', { maximumFractionDigits: 1 }));
 const pct = (n, total) => (total ? Math.round((n / total) * 100) : 0);
 
@@ -41,7 +41,7 @@ const I = {
 
 export default function TeacherDashboard() {
   const [classes, setClasses] = useState([]);
-  const [classId, setClassId] = useState(() => localStorage.getItem('teacherClassId') || '');
+  const { classId, setClassId } = useClassStore();
   const [report, setReport] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -59,7 +59,7 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     if (!classId) return;
-    localStorage.setItem('teacherClassId', classId);
+   ;
     setReport(null);
     client.get(`/classes/${classId}/report`)
       .then(({ data }) => setReport(data.report))

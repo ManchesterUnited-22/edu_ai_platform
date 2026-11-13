@@ -118,6 +118,11 @@ small { color: var(--muted); font-size: 0.8125rem; }
 /* Nội dung chính: bám sát sidebar, rộng tối đa 1440px, không căn giữa */
 .container { max-width: var(--content-max); margin: 0; padding: var(--sp-5) var(--sp-5) var(--sp-6); }
 .container-wide { max-width: none; padding: 0; }
+.side-class { margin: 0 var(--sp-1) var(--sp-2); }
+.side-class select { width: 100%; min-height: 38px; border-radius: 10px; background: var(--paper); font-weight: 600; }
+.side-badge { margin-left: auto; }
+.side-link.active .side-badge { background: #fff; color: var(--primary-d); }
+.side-empty { margin: var(--sp-3); font-size: 0.85rem; color: var(--muted); }
 
 /* ---------- Thẻ, ô chức năng ---------- */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: var(--sp-4) var(--sp-5); margin: var(--sp-3) 0; }
@@ -310,7 +315,8 @@ blockquote { margin: var(--sp-2) 0; padding: var(--sp-2) var(--sp-3); font-size:
     position: sticky; top: var(--header-h); z-index: 15; height: auto; display: flex; gap: var(--sp-1);
     padding: var(--sp-2) var(--sp-3); overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line);
   }
-  .side-title { display: none; }
+    .side-title, .side-class, .side-empty { display: none; }
+  .sidebar nav, .sidebar nav > div { display: flex; gap: var(--sp-1); }
   .side-link { white-space: nowrap; margin: 0; }
   .container { padding: var(--sp-4) var(--sp-4) var(--sp-6); }
   .sticky { top: 120px; }

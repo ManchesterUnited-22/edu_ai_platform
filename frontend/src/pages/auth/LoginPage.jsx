@@ -44,6 +44,7 @@ export default function LoginPage() {
       </section>
       <form className="login-form" onSubmit={submit}>
         <h2>Đăng nhập</h2>
+        <p className="auth-sub">Chào mừng bạn quay lại 👋</p>
         <label className="field">
           Email
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
@@ -54,6 +55,9 @@ export default function LoginPage() {
         </label>
         {error && <p className="error">{error}</p>}
         <button className="btn" disabled={busy}>{busy ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
+        <p className="muted" style={{ marginTop: 12, textAlign: 'center' }}>
+          Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
+        </p>
       </form>
     </div>
   );

@@ -61,7 +61,7 @@ export default function RegisterPage() {
 
       <form className="login-form" onSubmit={submit}>
         <h2>Đăng ký</h2>
-
+<p className="auth-sub">Tạo tài khoản chỉ mất một phút</p>
         <fieldset className="role-picker">
           <legend>Bạn là</legend>
           {ROLES.map((r) => (
