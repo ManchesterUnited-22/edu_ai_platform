@@ -15,9 +15,13 @@ import parentRoutes from './parent.routes.js';
 import socraticRoutes from './socratic.routes.js';
 import recommendationRoutes from './recommendation.routes.js';
 import topicRoutes from './topic.routes.js';   
+import adminRoutes from './admin.routes.js';
+import teacherVerificationRoutes from './teacherVerification.routes.js';
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/admin', adminRoutes);
+router.use('/teacher-verification', teacherVerificationRoutes);
 router.use('/classes', classRoutes);
 router.use('/', documentRoutes);
 router.use('/', qaRoutes);

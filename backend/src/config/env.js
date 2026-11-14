@@ -28,6 +28,7 @@ export const env = {
 
   JWT_SECRET: jwtSecret ?? 'test-only-secret',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '1h',
+  MFA_ENCRYPTION_KEY: process.env.MFA_ENCRYPTION_KEY ?? jwtSecret ?? 'test-only-mfa-key',
 
   PRACTICE_QUIZ_PER_DAY: Number(process.env.PRACTICE_QUIZ_PER_DAY ?? 5),
   QA_PER_MINUTE: Number(process.env.QA_PER_MINUTE ?? 10),

@@ -7,10 +7,57 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum Role {
+  admin
   teacher
   student
   parent
+}
+
+enum AccountStatus {
+  pending
+  active
+  rejected
+  suspended
+}
+
+enum TeacherType {
+  institution
+  independent
+  online
+}
+
+enum VerificationLevel {
+  basic
+  verified
+  trusted
+}
+
+enum VerificationStatus {
+  draft
+  processing
+  admin_review
+  needs_more_information
+  approved
+  rejected
+}
+
+enum VerificationTrack {
+  active_teacher
+  retired_teacher
+  teaching_student
+  new_graduate
+  language_teacher
+}
+
+enum VerificationDocumentKind {
+  identity
+  teaching_credential
+  employment_proof
+  transcript
+  language_certificate
+  other
 }
 
 enum ContentStatus {
@@ -46,34 +93,115 @@ enum NotificationType {
 
 // ───────── Người dùng & lớp học ─────────
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  fullName     String
-  role         Role
-  createdAt    DateTime @default(now())
+  id                     String            @id @default(uuid())
+  email                  String            @unique
+  passwordHash           String
+  fullName               String
+  role                   Role
+  status                 AccountStatus     @default(active)
+  teacherType            TeacherType?
+  verificationLevel      VerificationLevel @default(basic)
+  teacherBio             String?
+  teacherSubjects        String?
+  teacherExperienceYears Int?
+  mfaEnabled             Boolean           @default(false)
+  mfaSecret              String?
+  mfaPendingSecret       String?
+  mfaRecoveryCodes       Json?
+  mfaEnrolledAt          DateTime?
+  createdAt              DateTime          @default(now())
 
-  classesTaught   Class[]            @relation("TeacherClasses")
-  enrollments     Enrollment[]
-  documents       Document[]
-  contents        GeneratedContent[]
-  attempts        QuizAttempt[]
-  practiceQuizzes PracticeQuiz[]
-  qaLogs          QaLog[]
-  answerReports   AnswerReport[]
-  notifications   Notification[]
-  parentLinks     ParentLink[]       @relation("ParentSide")
-  studentLinks    ParentLink[]       @relation("StudentSide")
-  linkCodes       LinkCode[]         @relation("CodeOwner")
-  usedCodes       LinkCode[]         @relation("CodeUsedBy")
+  classesTaught        Class[]               @relation("TeacherClasses")
+  enrollments          Enrollment[]
+  documents            Document[]
+  contents             GeneratedContent[]
+  attempts             QuizAttempt[]
+  practiceQuizzes      PracticeQuiz[]
+  qaLogs               QaLog[]
+  answerReports        AnswerReport[]
+  notifications        Notification[]
+  parentLinks          ParentLink[]          @relation("ParentSide")
+  studentLinks         ParentLink[]          @relation("StudentSide")
+  linkCodes            LinkCode[]            @relation("CodeOwner")
+  usedCodes            LinkCode[]            @relation("CodeUsedBy")
+  securityTargets      SecurityEvent[]       @relation("SecurityTarget")
+  securityActors       SecurityEvent[]       @relation("SecurityActor")
+  teacherVerifications TeacherVerification[]
+  verificationReviews  TeacherVerification[] @relation("VerificationReviewer")
+}
+
+model TeacherVerification {
+  id          String             @id @default(uuid())
+  userId      String
+  track       VerificationTrack
+  status      VerificationStatus @default(draft)
+  aiScore     Int?
+  aiLabel     String?
+  aiReasons   Json?
+  aiSource    String?
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+  reviewerId  String?
+  reviewNote  String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user      User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewer  User?                         @relation("VerificationReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  documents TeacherVerificationDocument[]
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model TeacherVerificationDocument {
+  id             String                   @id @default(uuid())
+  verificationId String
+  kind           VerificationDocumentKind
+  fileName       String
+  filePath       String
+  mimeType       String
+  createdAt      DateTime                 @default(now())
+
+  verification TeacherVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+
+  @@index([verificationId, kind])
+}
+
+enum SecurityEventType {
+  failed_teacher_login
+  teacher_role_misuse
+  pending_teacher_access
+  teacher_ai_review
+}
+
+model SecurityEvent {
+  id           String            @id @default(uuid())
+  type         SecurityEventType
+  targetUserId String?
+  actorUserId  String?
+  emailHint    String?
+  ipAddress    String?
+  userAgent    String?
+  riskScore    Int               @default(0)
+  riskReasons  Json?
+  metadata     Json?
+  createdAt    DateTime          @default(now())
+  resolvedAt   DateTime?
+
+  targetUser User? @relation("SecurityTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+  actorUser  User? @relation("SecurityActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([type, createdAt])
+  @@index([targetUserId, createdAt])
 }
 
 model Class {
-  id        String   @id @default(uuid())
-  name      String
-  subject   String
-  teacherId String
-  createdAt DateTime @default(now())
+  id              String             @id @default(uuid())
+  name            String
+  subject         String
+  teacherId       String
+  createdAt       DateTime           @default(now())
   topics          Topic[]
   teacher         User               @relation("TeacherClasses", fields: [teacherId], references: [id])
   enrollments     Enrollment[]
@@ -311,6 +439,7 @@ model Notification {
 
   @@index([userId, readAt])
 }
+
 // ───────── Cây chủ đề & quan hệ tiên quyết (nguồn gốc của Graph) ─────────
 model Topic {
   id        String   @id @default(uuid())

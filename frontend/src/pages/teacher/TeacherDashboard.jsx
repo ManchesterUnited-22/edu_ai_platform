@@ -44,6 +44,9 @@ export default function TeacherDashboard() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const activeClassId = classes.some((item) => item.id === classId)
+    ? classId
+    : classes[0]?.id ?? '';
 
   useEffect(() => {
     client.get('/classes')
@@ -57,13 +60,16 @@ export default function TeacherDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!classId) return;
-   ;
+    if (!activeClassId) {
+      setReport(null);
+      return;
+    }
     setReport(null);
-    client.get(`/classes/${classId}/report`)
+    setError('');
+    client.get(`/classes/${activeClassId}/report`)
       .then(({ data }) => setReport(data.report))
       .catch((e) => setError(errorMessage(e)));
-  }, [classId]);
+  }, [activeClassId]);
 
   const view = useMemo(() => {
     if (!report) return null;
@@ -85,7 +91,7 @@ export default function TeacherDashboard() {
   if (loading) return <p>Đang tải…</p>;
   if (error) return <p className="error">{error}</p>;
 
-  const base = `/teacher/classes/${classId}`;
+  const base = `/teacher/classes/${activeClassId}`;
   const s = report?.summary;
   const hasClass = classes.length > 0;
 
@@ -94,8 +100,8 @@ export default function TeacherDashboard() {
       <div className="dash-head">
         <h2>Tổng quan</h2>
         {hasClass && (
-          <select className="class-select" value={classId} onChange={(e) => setClassId(e.target.value)} aria-label="Chọn lớp">
-            {classes.map((c) => <option key={c.id} value={c.id}>{c.name} · {c.subject}</option>)}
+          <select className="class-select" value={activeClassId} onChange={(e) => setClassId(e.target.value)} aria-label="Chọn lớp">
+            {classes.map((c) =>             <option key={c.id} value={c.id}>{c.name} · {c.subject}</option>)}
           </select>
         )}
       </div>

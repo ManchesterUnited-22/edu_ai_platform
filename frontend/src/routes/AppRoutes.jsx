@@ -1,7 +1,9 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Header from '../components/layout/Header.jsx';
 import Sidebar from '../components/layout/Sidebar.jsx';
-import LoginPage, { homeFor } from '../pages/auth/LoginPage.jsx';
+import LoginPage from '../pages/auth/LoginPage.jsx';
+import RegisterPage from '../pages/auth/RegisterPage.jsx';
+import LandingPage from '../pages/LandingPage.jsx';
 import NotFoundPage from '../pages/NotFoundPage.jsx';
 
 // Phụ huynh
@@ -31,17 +33,27 @@ import QuizManagePage from '../pages/teacher/QuizManagePage.jsx';
 import TeacherDashboard from '../pages/teacher/TeacherDashboard.jsx';
 import TopicManagePage from '../pages/teacher/TopicManagePage.jsx';
 import WrongAnswerReportsPage from '../pages/teacher/WrongAnswerReportsPage.jsx';
+import TeacherVerificationPage from '../pages/teacher/TeacherVerificationPage.jsx';
+import AdminDashboard from '../pages/admin/AdminDashboard.jsx';
 
 import { useAuthStore } from '../store/authStore.js';
 import ProtectedRoute from './ProtectedRoute.jsx';
-import RegisterPage from '../pages/auth/RegisterPage.jsx';
-function Home() {
-  const user = useAuthStore((s) => s.user);
-  return <Navigate to={user ? homeFor(user.role) : '/login'} replace />;
-}
 
 export default function AppRoutes() {
   const user = useAuthStore((s) => s.user);
+  const { pathname } = useLocation();
+
+  // Trang chủ và đăng ký có giao diện riêng, không dùng Header/Sidebar chung
+  if (pathname === '/' || pathname.startsWith('/register')) {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register/:role" element={<RegisterPage />} />
+        <Route path="*" element={<Navigate to="/register" replace />} />
+      </Routes>
+    );
+  }
 
   return (
     <>
@@ -50,9 +62,11 @@ export default function AppRoutes() {
         {user && <Sidebar />}
         <main className={user ? 'container' : 'container-wide'}>
           <Routes>
-            <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route element={<ProtectedRoute role="admin" />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
+
             <Route element={<ProtectedRoute role="parent" />}>
               <Route path="/parent" element={<ParentDashboard />} />
               <Route path="/parent/link" element={<LinkChildPage />} />
@@ -73,6 +87,7 @@ export default function AppRoutes() {
 
             <Route element={<ProtectedRoute role="teacher" />}>
               <Route path="/teacher" element={<TeacherDashboard />} />
+              <Route path="/teacher/verification" element={<TeacherVerificationPage />} />
               <Route path="/teacher/topics" element={<TopicManagePage />} />
               <Route path="/teacher/classes" element={<ClassListPage />} />
               <Route path="/teacher/classes/:classId" element={<ClassDetailPage />} />

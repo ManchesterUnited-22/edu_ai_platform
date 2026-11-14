@@ -22,10 +22,19 @@ const demoUsers = [
   },
 ];
 
+if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+  demoUsers.push({
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASSWORD,
+    fullName: process.env.ADMIN_NAME || 'Quản trị viên',
+    role: 'admin',
+  });
+}
+
 const upsertUser = (user) =>
   prisma.user.upsert({
     where: { email: user.email },
-    update: { fullName: user.fullName, role: user.role },
+    update: { fullName: user.fullName, role: user.role, status: 'active' },
     create: {
       email: user.email,
       passwordHash: bcrypt.hashSync(user.password, 10),

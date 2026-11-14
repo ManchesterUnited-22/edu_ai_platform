@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '../common/Icon.jsx';
 import { useAuthStore } from '../../store/authStore.js';
-
+import { homeFor } from '../../pages/auth/LoginPage.jsx';
 const ROLE = { student: 'Học sinh', teacher: 'Giáo viên', parent: 'Phụ huynh' };
 
 // Trang đích của ô tìm kiếm và nút thông báo theo vai trò
@@ -46,12 +46,12 @@ export default function Header() {
   const onLogout = () => {
     setOpen(false);
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
     <header className="header">
-      <Link to="/" className="brand">
+      <Link to={user ? homeFor(user.role) : '/'} className="brand">
         <span className="brand-mark">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z M9 9h6" /></svg>
         </span>

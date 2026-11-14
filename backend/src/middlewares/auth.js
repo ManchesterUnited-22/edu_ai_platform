@@ -33,12 +33,39 @@ export const authenticate = async (req, res, next) => {
         email: true,
         fullName: true,
         role: true,
+        status: true,
+        mfaEnabled: true,
         createdAt: true,
       },
     });
 
     if (!user) {
       throw new AppError('Tài khoản không tồn tại', 401, 'USER_NOT_FOUND');
+    }
+
+    if (user.status !== 'active') {
+      if (user.role === 'teacher' && user.status === 'pending') {
+        await prisma.securityEvent.create({
+          data: {
+            type: 'pending_teacher_access',
+            targetUserId: user.id,
+            ipAddress: req.ip,
+            userAgent: req.get('user-agent')?.slice(0, 500),
+            riskScore: 45,
+            riskReasons: ['Tài khoản giáo viên chưa được admin duyệt nhưng vẫn gửi yêu cầu'],
+          },
+        }).catch((error) => console.error('Không thể ghi nhận truy cập giáo viên chờ duyệt', error));
+      }
+      const code = user.role === 'teacher' && user.status === 'pending'
+        ? 'TEACHER_PENDING_APPROVAL'
+        : 'ACCOUNT_NOT_ACTIVE';
+      throw new AppError(
+        user.role === 'teacher' && user.status === 'pending'
+          ? 'Tài khoản giáo viên đang chờ admin duyệt'
+          : 'Tài khoản chưa được phép sử dụng',
+        403,
+        code,
+      );
     }
 
     req.user = user;

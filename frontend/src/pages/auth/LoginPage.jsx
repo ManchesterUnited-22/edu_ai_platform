@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth.js';
+import { confirmMfaSetup, login, setupMfa, verifyMfa } from '../../api/auth.js';
 import { errorMessage } from '../../api/client.js';
 import { useAuthStore } from '../../store/authStore.js';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [challenge, setChallenge] = useState(null);
+  const [setup, setSetup] = useState(null);
+  const [mfaCode, setMfaCode] = useState('');
+  const [pendingSession, setPendingSession] = useState(null);
+
+  useEffect(() => {
+    if (!challenge?.mfaSetupRequired) return;
+    setSetup(null);
+    setupMfa(challenge.mfaToken)
+      .then(setSetup)
+      .catch((err) => setError(errorMessage(err)));
+  }, [challenge]);
 
   if (user) return <Navigate to={homeFor(user.role)} replace />;
 
@@ -22,9 +34,27 @@ export default function LoginPage() {
     setBusy(true);
     setError('');
     try {
+      if (challenge) {
+        const data = challenge.mfaSetupRequired
+          ? await confirmMfaSetup(challenge.mfaToken, mfaCode)
+          : await verifyMfa(challenge.mfaToken, mfaCode);
+        if (challenge.mfaSetupRequired) {
+          setPendingSession(data);
+          setChallenge(null);
+          setSetup(null);
+        } else {
+          setSession(data);
+          navigate(homeFor(data.user.role), { replace: true });
+        }
+        return;
+      }
       const data = await login(email, password);
-      setSession(data);
-      navigate(homeFor(data.user.role), { replace: true });
+      if (data.mfaRequired || data.mfaSetupRequired) {
+        setChallenge(data);
+      } else {
+        setSession(data);
+        navigate(homeFor(data.user.role), { replace: true });
+      }
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -65,20 +95,56 @@ export default function LoginPage() {
           <span className="form-kicker">CHÀO MỪNG TRỞ LẠI</span>
           <h2>Đăng nhập</h2>
         </div>
-        <p className="auth-sub">Chào mừng bạn quay lại 👋</p>
-        <label className="field">
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
-        </label>
-        <label className="field">
-          Mật khẩu
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
-        </label>
+        {pendingSession ? (
+          <>
+            <p className="auth-sub">MFA đã được bật thành công. Hãy lưu các mã khôi phục trước khi tiếp tục.</p>
+            <div className="mfa-recovery-codes">
+              {pendingSession.recoveryCodes.map((code) => <code key={code}>{code}</code>)}
+            </div>
+            <button type="button" className="btn login-submit" onClick={() => {
+              setSession(pendingSession);
+              navigate(homeFor(pendingSession.user.role), { replace: true });
+            }}>Tôi đã lưu mã, tiếp tục</button>
+          </>
+        ) : challenge ? (
+          <>
+            <p className="auth-sub">
+              {challenge.mfaSetupRequired
+                ? 'Thiết lập ứng dụng Authenticator để bảo vệ tài khoản giáo viên.'
+                : 'Nhập mã 6 số từ ứng dụng Authenticator hoặc một mã khôi phục.'}
+            </p>
+            {challenge.mfaSetupRequired && setup && (
+              <div className="mfa-setup">
+                <img src={setup.qrCodeDataUrl} alt="Mã QR thiết lập Authenticator" className="mfa-qr" />
+                <p>Không quét được mã? Nhập khóa này thủ công:</p>
+                <code className="mfa-secret">{setup.secret}</code>
+              </div>
+            )}
+            {challenge.mfaSetupRequired && !setup && <p className="muted">Đang tạo thông tin thiết lập...</p>}
+            <label className="field">
+              {challenge.mfaSetupRequired ? 'Mã xác nhận thiết lập' : 'Mã MFA'}
+              <input value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} inputMode="numeric" autoComplete="one-time-code" minLength={6} maxLength={20} required autoFocus />
+            </label>
+            <button type="button" className="btn btn-light" onClick={() => { setChallenge(null); setSetup(null); setMfaCode(''); }}>Quay lại đăng nhập</button>
+          </>
+        ) : (
+          <>
+            <p className="auth-sub">Chào mừng bạn quay lại 👋</p>
+            <label className="field">
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+            </label>
+            <label className="field">
+              Mật khẩu
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+            </label>
+          </>
+        )}
         {error && <p className="error">{error}</p>}
-        <button className="btn login-submit" disabled={busy}>{busy ? 'Đang đăng nhập...' : 'Đăng nhập'}</button>
-        <p className="muted" style={{ marginTop: 12, textAlign: 'center' }}>
+        {!pendingSession && <button className="btn login-submit" disabled={busy || (challenge?.mfaSetupRequired && !setup)}>{busy ? 'Đang xác thực...' : challenge ? 'Xác nhận MFA' : 'Đăng nhập'}</button>}
+        {!challenge && !pendingSession && <p className="muted" style={{ marginTop: 12, textAlign: 'center' }}>
           Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
-        </p>
+        </p>}
       </form>
     </div>
   );

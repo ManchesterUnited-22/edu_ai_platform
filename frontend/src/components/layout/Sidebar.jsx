@@ -15,7 +15,10 @@ const NAV = {
     { title: 'Theo dõi', items: [['/student/progress', 'Tiến độ', 'chart'], ['/student/review', 'Gợi ý ôn tập', 'bulb']] },
   ],
   teacher: [
-    { items: [['/teacher', 'Tổng quan', 'home', true], ['/teacher/classes', 'Danh sách lớp', 'class', true], ['/teacher/topics', 'Chủ đề', 'topics']] },
+    { items: [['/teacher', 'Tổng quan', 'home', true], ['/teacher/verification', 'Xác minh hồ sơ', 'shield'], ['/teacher/classes', 'Danh sách lớp', 'class', true], ['/teacher/topics', 'Chủ đề', 'topics']] },
+  ],
+  admin: [
+    { items: [['/admin', 'Quản trị hệ thống', 'shield', true]] },
   ],
   parent: [
     { items: [['/parent', 'Con của tôi', 'users', true], ['/parent/link', 'Liên kết con', 'link'], ['/parent/alerts', 'Cảnh báo', 'bell']] },
